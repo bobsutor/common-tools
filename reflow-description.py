@@ -1,3 +1,5 @@
+# cspell:ignore rangle
+
 import io
 
 import pyperclip  # type: ignore
