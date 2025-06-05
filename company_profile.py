@@ -1,8 +1,7 @@
 # cspell:ignore asis Crunchbase ndash tagtext yattag
 
 import json
-from datetime import date
-from datetime import datetime
+from datetime import date, datetime
 
 import os_tools
 import yattag
@@ -173,8 +172,17 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
             for person in role_data:
                 with tag("li"):
                     if person["links"]["primary"] is not None and person["links"]["primary"]:
-                        with tag("a", href=person["links"]["primary"], target="_blank"):
-                            text(person["name"])
+                        if ".linkedin." in person["links"]["primary"]:
+                            with tag(
+                                "a",
+                                href=person["links"]["primary"],
+                                target="_blank",
+                                title="Go to their LinkedIn profile",
+                            ):
+                                text(person["name"])
+                        else:
+                            with tag("a", href=person["links"]["primary"], target="_blank"):
+                                text(person["name"])
                     else:
                         text(person["name"])
 
@@ -265,8 +273,7 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
 
 
 if __name__ == "__main__":
-    COMPANY = "Google"
-    # COMPANY = "Alice and Bob"
+    COMPANY = "D-Wave Quantum"
     with open(
         f"../sg-reports/output/{COMPANY}-Company-Profile.html", "wt", encoding="utf-8"
     ) as output_html_file:

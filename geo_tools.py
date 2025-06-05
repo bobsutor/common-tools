@@ -4,6 +4,7 @@ Formatting glossary with yattag
 
 # cspell:ignore addnext Aptos klass Oxml OxmlElement Pt yattag
 
+import docx_tools
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt
@@ -554,7 +555,7 @@ canadian_provinces_and_territories = {
     "NU": "Nunavut",
     "ON": "Ontario",
     "PE": "Prince Edward Island",
-    "QB": "Qu\u00e9bec",
+    "QC": "Québec",
     "SK": "Saskatchewan",
     "YT": "Yukon",
 }
@@ -578,47 +579,35 @@ australian_states_and_territories = {
 }
 
 
-# List of German federal states
-german_states = [
-    "Baden-Württemberg",
-    "Bavaria",
-    "Berlin",
-    "Brandenburg",
-    "Bremen",
-    "Hamburg",
-    "Hesse",
-    "Lower Saxony",
-    "Mecklenburg-Vorpommern",
-    "North Rhine-Westphalia",
-    "Rhineland-Palatinate",
-    "Saarland",
-    "Saxony",
-    "Saxony-Anhalt",
-    "Schleswig-Holstein",
-    "Thuringia",
-]
+# German federal states
 
-# List of abbreviations for German federal states
-german_state_abbreviations = [
-    "BW",
-    "BY",
-    "BE",
-    "BB",
-    "HB",
-    "HH",
-    "HE",
-    "NI",
-    "MV",
-    "NW",
-    "RP",
-    "SL",
-    "SN",
-    "ST",
-    "SH",
-    "TH",
-]
+german_states = {
+    "BW": "Baden-Württemberg",
+    "BY": "Bavaria",
+    "BE": "Berlin",
+    "BB": "Brandenburg",
+    "HB": "Bremen",
+    "HH": "Hamburg",
+    "HE": "Hesse",
+    "NI": "Lower Saxony",
+    "MV": "Mecklenburg-Vorpommern",
+    "NW": "North Rhine-Westphalia",
+    "RP": "Rhineland-Palatinate",
+    "SL": "Saarland",
+    "SN": "Saxony",
+    "ST": "Saxony-Anhalt",
+    "SH": "Schleswig-Holstein",
+    "TH": "Thuringia",
+}
+
+german_state_counts: dict[str, int] = dict()
+
+for _state in german_states.values():
+    german_state_counts[_state] = 0
+
 
 # French modern region names
+
 french_current_regions_names = [
     "Auvergne-Rhône-Alpes",
     "Bourgogne-Franche-Comté",
@@ -634,6 +623,12 @@ french_current_regions_names = [
     "Pays de la Loire",
     "Provence-Alpes-Côte d'Azur",
 ]
+
+
+french_region_counts: dict[str, int] = dict()
+
+for _region in french_current_regions_names:
+    french_region_counts[_region] = 0
 
 # cspell:enable
 
@@ -677,13 +672,7 @@ def print_countries_in_regions_counts():
 def increment_state_in_US(address):
     state = get_state_or_province(address)
     assert state in us_states_and_territories.values()
-    us_state_counts[state] += 1
-
-
-def increment_province_in_Canada(address):
-    province = get_state_or_province(address)
-    assert province in canadian_provinces_and_territories.values()
-    canada_province_counts[province] += 1
+    us_state_counts[state] += 1  # type: ignore
 
 
 def get_US_state_counts():
@@ -696,6 +685,12 @@ def get_US_state_counts():
     return states, counts
 
 
+def increment_province_in_Canada(address):
+    province = get_state_or_province(address)
+    assert province in canadian_provinces_and_territories.values()
+    canada_province_counts[province] += 1  # type: ignore
+
+
 def get_Canada_province_counts():
     provinces = []
     counts = []
@@ -706,10 +701,89 @@ def get_Canada_province_counts():
     return provinces, counts
 
 
-def print_state_counts_in_US():
-    for _state, _count in us_state_counts.items():
+def increment_region_in_France(address):
+    region = get_state_or_province(address)
+    if region not in french_current_regions_names:
+        raise ValueError(f"Unknown French region: {region}")
+    french_region_counts[region] += 1  # type: ignore
+
+
+def get_French_region_counts():
+    regions = []
+    counts = []
+    for _region, _count in french_region_counts.items():
         if _count != 0:
-            print(f"{_state}: {_count}")
+            regions.append(_region)
+            counts.append(_count)
+    return regions, counts
+
+
+def increment_state_in_Germany(address):
+    state = get_state_or_province(address)
+    if state not in german_states.values():
+        raise ValueError(f"Unknown German state: {state}")
+    german_state_counts[state] += 1  # type: ignore
+
+
+def get_German_state_counts():
+    states = []
+    counts = []
+    for _state, _count in german_state_counts.items():
+        if _count != 0:
+            states.append(_state)
+            counts.append(_count)
+    return states, counts
+
+
+def increment_state_province_or_local_region(address):
+    country = get_country(address)
+
+    if country == "USA":
+        increment_state_in_US(address)
+
+    elif country == "Canada":
+        increment_province_in_Canada(address)
+
+    elif country == "France":
+        increment_region_in_France(address)
+
+    elif country == "Germany":
+        increment_state_in_Germany(address)
+
+    elif country == "UK":
+        increment_UK_city(address)
+
+
+def get_max_companies_in_a_state_or_province():
+    m = max(us_state_counts.values())
+    m = max(m, *canada_province_counts.values())
+    m = max(m, *french_region_counts.values())
+    m = max(m, *german_state_counts.values())
+    return m
+
+
+# UK cities
+
+UK_city_counts: dict[str, int] = dict()
+
+
+def increment_UK_city(address):
+    city = get_city(address)
+    if city not in UK_city_counts:
+        UK_city_counts[city] = 1
+    else:
+        UK_city_counts[city] += 1
+
+
+def get_UK_city_counts():
+    sorted_UK_city_counts = {k: UK_city_counts[k] for k in sorted(UK_city_counts)}
+    cities = []
+    counts = []
+    for _city, _count in sorted_UK_city_counts.items():
+        if _count != 0:
+            cities.append(_city)
+            counts.append(_count)
+    return cities, counts
 
 
 def get_regions_and_counts():
@@ -735,18 +809,7 @@ def write_region_word_appendix(id_, appendix_title, word_document):
     # pylint: disable=W0212
     heading = word_document.add_heading(appendix_title, 1)
     run = heading.runs[0]
-
-    # Create bookmark elements
-    bookmark_start = OxmlElement("w:bookmarkStart")
-    bookmark_start.set(qn("w:id"), id_)  # Unique ID (use a different one for each bookmark)
-    bookmark_start.set(qn("w:name"), id_)  # Bookmark name
-
-    bookmark_end = OxmlElement("w:bookmarkEnd")
-    bookmark_end.set(qn("w:id"), id_)  # Same ID as bookmarkStart
-
-    # Insert bookmark before and after the text
-    run._r.insert(0, bookmark_start)  # Before text
-    run._r.addnext(bookmark_end)  # After text
+    docx_tools.add_bookmark_for_id(id_, run)
 
     # Create a custom region style
     region_style = word_document.styles.add_style("RegionAppendix", 1)
@@ -761,6 +824,7 @@ def write_region_word_appendix(id_, appendix_title, word_document):
         # p = word_document.add_paragraph(
         #     f"{region_data['name']} ({region_abbreviation})", style="RegionAppendix"
         # )
+
         p = word_document.add_paragraph(
             f"{region_abbreviation} – {region_data['name']}", style="RegionAppendix"
         )
@@ -770,6 +834,17 @@ def write_region_word_appendix(id_, appendix_title, word_document):
         p = word_document.add_paragraph(", ".join(region_data["countries"]))
         p.paragraph_format.left_indent = Pt(18)
     # pylint: enable=W0212
+
+
+def get_city(address_):
+    while "  " in address_:
+        address_ = address_.replace("  ", " ")
+
+    if ", " not in address_:
+        return address_
+
+    address_parts = address_.split(", ")
+    return address_parts[0].strip()
 
 
 def get_country(address_):

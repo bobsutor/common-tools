@@ -7,9 +7,8 @@ from copy import copy
 import docx
 from bs4 import BeautifulSoup
 from common_data import HARVARD_CRIMSON
+from docx.enum.section import WD_SECTION
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_LINE_SPACING
-
-# from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
@@ -17,6 +16,23 @@ from docx.shared import Inches, Pt, RGBColor
 # -------------------------------------------------------------------------------------------------
 # Hyperlinks
 # -------------------------------------------------------------------------------------------------
+
+
+def add_bookmark_for_id(id_, run):
+    # Create bookmark elements
+
+    # pylint: disable=W0212
+    bookmark_start = OxmlElement("w:bookmarkStart")
+    bookmark_start.set(qn("w:id"), id_)  # Unique ID (use a different one for each bookmark)
+    bookmark_start.set(qn("w:name"), id_)  # Bookmark name
+
+    bookmark_end = OxmlElement("w:bookmarkEnd")
+    bookmark_end.set(qn("w:id"), id_)  # Same ID as bookmarkStart
+
+    # Insert bookmark before and after the text
+    run._r.insert(0, bookmark_start)  # Before text
+    run._r.addnext(bookmark_end)  # After text
+    # pylint: enable=W0212
 
 
 def add_hyperlink(paragraph, text_, url, is_italic=False):
@@ -52,7 +68,22 @@ def add_hyperlink(paragraph, text_, url, is_italic=False):
     return new_run
 
 
-def add_hyperlink_to_bookmark(paragraph, link_text, bookmark_name, is_italic=False):
+def add_bookmark(paragraph, bookmark_name, bookmark_id):
+    # pylint: disable=W0212
+    # Create bookmarkStart element
+    bookmark_start = OxmlElement("w:bookmarkStart")
+    bookmark_start.set(qn("w:id"), str(bookmark_id))
+    bookmark_start.set(qn("w:name"), bookmark_name)
+    # Create bookmarkEnd element
+    bookmark_end = OxmlElement("w:bookmarkEnd")
+    bookmark_end.set(qn("w:id"), str(bookmark_id))
+    # Insert bookmarkStart at the beginning, bookmarkEnd at the end
+    paragraph._p.insert(0, bookmark_start)
+    paragraph._p.append(bookmark_end)
+    # pylint: disable=W0212
+
+
+def add_hyperlink_to_bookmark(paragraph, link_text, bookmark_name, tooltip=None, is_italic=False):
     """Creates a hyperlink to an internal bookmark."""
 
     get_or_create_hyperlink_style(paragraph.part.document)
@@ -60,6 +91,8 @@ def add_hyperlink_to_bookmark(paragraph, link_text, bookmark_name, is_italic=Fal
     # pylint: disable=W0212
     hyperlink = OxmlElement("w:hyperlink")
     hyperlink.set(qn("w:anchor"), bookmark_name)
+    if tooltip is not None:
+        hyperlink.set(qn("w:tooltip"), tooltip)
 
     run = paragraph.add_run()
     rPr = run._element.get_or_add_rPr()
@@ -295,11 +328,66 @@ def set_word_table_cell_colors(cell, row_index):
 # -------------------------------------------------------------------------------------------------
 
 
-def insert_page_break(tag, word_document):
-    with tag("p", style="break-after: page;"):
-        pass
-    if word_document is not None:
-        word_document.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
+def insert_page_break(word_document):
+    assert word_document is not None
+
+    word_document.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
+
+
+# -------------------------------------------------------------------------------------------------
+# Section breaks
+# -------------------------------------------------------------------------------------------------
+
+
+def insert_section_break(word_document):
+    assert word_document is not None
+
+    return word_document.add_section(WD_SECTION.NEW_PAGE)
+
+
+def insert_two_column_section(word_document):
+    assert word_document is not None
+
+    section = word_document.add_section(WD_SECTION.CONTINUOUS)
+
+    # pylint: disable=W0212
+
+    sectPr = section._sectPr  # Access the section's XML
+
+    # Find or create the <w:cols> element
+    cols = sectPr.xpath("./w:cols")
+    if not cols:
+        cols = OxmlElement("w:cols")
+        sectPr.append(cols)
+    else:
+        cols = cols[0]
+
+    # Set the number of columns and spacing
+    cols.set(qn("w:num"), "2")
+    cols.set(qn("w:space"), "500")  # Space between columns (in twentieths of a point)
+    # pylint: enable=W0212
+
+
+def insert_one_column_section(word_document):
+    assert word_document is not None
+
+    section = word_document.add_section(WD_SECTION.CONTINUOUS)
+
+    # pylint: disable=W0212
+
+    sectPr = section._sectPr  # Access the section's XML
+
+    # Find or create the <w:cols> element
+    cols = sectPr.xpath("./w:cols")
+    if not cols:
+        cols = OxmlElement("w:cols")
+        sectPr.append(cols)
+    else:
+        cols = cols[0]
+
+    # Set the number of columns and spacing
+    cols.set(qn("w:num"), "1")
+    # pylint: enable=W0212
 
 
 # -------------------------------------------------------------------------------------------------
@@ -347,6 +435,10 @@ def convert_html_to_word(html_string, word_document):
                     p_.paragraph_format.left_indent = Pt(18)
                     walk_html(child, p_)
 
+                elif child.name == "br":
+                    run = p_.runs[-1]
+                    run.add_break(WD_BREAK.LINE)
+
                 elif child.name == "p":
                     p_ = word_document.add_paragraph()
                     new_paragraph = True
@@ -392,9 +484,9 @@ def convert_html_to_word(html_string, word_document):
                             new_paragraph = True
 
                         if not the_link.startswith("#"):
-                            add_hyperlink(p_, child.string, the_link, is_italic)
+                            add_hyperlink(p_, child.string, the_link, is_italic=is_italic)
                         else:
-                            add_hyperlink_to_bookmark(p_, child.string, the_link[1:], is_italic)
+                            add_hyperlink_to_bookmark(p_, child.string, the_link[1:], is_italic=is_italic)
                     else:
                         run = p_.add_run(child.string)
                         if is_italic:

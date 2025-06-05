@@ -5,15 +5,18 @@ Formatting glossary with yattag
 # cspell:ignore addnext asis klass oxml OxmlElement qn rangle tagtext vert yattag
 
 import json
-import sys
 
 import docx_tools
 import os_tools
-import yattag
-from common_data import CSS_FILE
+
+# import yattag
+# from common_data import CSS_FILE
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt
+
+# import sys
+
 
 GLOSSARY_FILE = "../../data/quantum-glossary.json"
 
@@ -82,7 +85,11 @@ def word_format_glossary_terms(terms, word_document):
         run._r.addnext(bookmark_end)  # After text
         # pylint: enable=W0212
 
-        p = word_document.add_paragraph(" ".join(term_data["definition"]))
+        glossary_text = " ".join(term_data["definition"])
+        docx_tools.convert_html_to_word(glossary_text, word_document)
+        p = word_document.paragraphs[-1]
+
+        # p = word_document.add_paragraph(" ".join(term_data["definition"]))
         p.paragraph_format.left_indent = Pt(18)
 
         p.add_run(" (")
@@ -93,6 +100,12 @@ def word_format_glossary_terms(terms, word_document):
         else:
             p.add_run(term_data["source"])
         p.add_run(")")
+
+        if "notes" in term_data:
+            p = word_document.add_paragraph(" ".join(term_data["notes"]))
+            p.paragraph_format.left_indent = Pt(18)
+            run = p.runs[0]
+            run.italic = True
 
 
 def get_glossary_id(term: str) -> str:
@@ -105,20 +118,21 @@ def get_glossary_id(term: str) -> str:
 def write_glossary_word_appendix(id_, appendix_title, word_document):
     heading = word_document.add_heading(appendix_title, 1)
     run = heading.runs[0]
+    docx_tools.add_bookmark_for_id(id_, run)
 
-    # Create bookmark elements
-    # pylint: disable=W0212
-    bookmark_start = OxmlElement("w:bookmarkStart")
-    bookmark_start.set(qn("w:id"), id_)  # Unique ID (use a different one for each bookmark)
-    bookmark_start.set(qn("w:name"), id_)  # Bookmark name
+    # # Create bookmark elements
+    # # pylint: disable=W0212
+    # bookmark_start = OxmlElement("w:bookmarkStart")
+    # bookmark_start.set(qn("w:id"), id_)  # Unique ID (use a different one for each bookmark)
+    # bookmark_start.set(qn("w:name"), id_)  # Bookmark name
 
-    bookmark_end = OxmlElement("w:bookmarkEnd")
-    bookmark_end.set(qn("w:id"), id_)  # Same ID as bookmarkStart
+    # bookmark_end = OxmlElement("w:bookmarkEnd")
+    # bookmark_end.set(qn("w:id"), id_)  # Same ID as bookmarkStart
 
-    # Insert bookmark before and after the text
-    run._r.insert(0, bookmark_start)  # Before text
-    run._r.addnext(bookmark_end)  # After text
-    # pylint: enable=W0212
+    # # Insert bookmark before and after the text
+    # run._r.insert(0, bookmark_start)  # Before text
+    # run._r.addnext(bookmark_end)  # After text
+    # # pylint: enable=W0212
 
 
 """
@@ -128,22 +142,4 @@ Do not include matrices in mathematical form. Do not include links or references
 """
 
 if __name__ == "__main__":
-    doc, tag, text = yattag.Doc().tagtext()
-
-    doc.asis("<!DOCTYPE html>")
-
-    with tag("html", lang="en"):
-        with tag("head"):
-            with tag("title"):
-                text("Sutor Group Glossary")
-
-            doc.stag("link", rel="stylesheet", type="text/css", href="../" + CSS_FILE)
-
-        with tag("body"):
-            for term_ in glossary:
-                html_format_glossary_term(term_, doc, tag, text)
-
-    result = yattag.indent(doc.getvalue())
-
-    with open("output/Sutor-Group-Glossary.html", "wt", encoding="utf-8") as output_file:
-        print(result, file=output_file)
+    print(json.dumps(list(glossary.keys()), indent=4))

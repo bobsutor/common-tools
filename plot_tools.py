@@ -9,27 +9,33 @@
 
 
 import math
+import os
 
 import geo_tools
 import os_tools
 import plotly.graph_objects as go  # type: ignore
-from common_data import BANANA_YELLOW
-from common_data import CHART_HEIGHT
-from common_data import CHART_WIDTH
-from common_data import FOR_FUTURUM
-from common_data import FUTURUM_COLORS
-from common_data import FUTURUM_LOGO_PATH
-from common_data import HARVARD_CRIMSON
-from common_data import ROYAL_BLUE
-from common_data import SHOW_CHART_LOGOS
-from common_data import SHOW_FIGURE_NUMBERS
-from common_data import SUTOR_GROUP_LOGO_PATH
+import plotly.io as pio  # type: ignore
+from common_data import (
+    BANANA_YELLOW,
+    CHART_HEIGHT,
+    CHART_WIDTH,
+    FOR_FUTURUM,
+    FUTURUM_COLORS,
+    FUTURUM_LOGO_PATH,
+    HARVARD_CRIMSON,
+    ROYAL_BLUE,
+    SHOW_CHART_LOGOS,
+    SHOW_FIGURE_NUMBERS,
+    SUTOR_GROUP_LOGO_PATH,
+)
 from PIL import Image
 from sty import fg  # type: ignore
 
+# import time
+
+
 BACKGROUND_COLOR = "white"
 # BACKGROUND_COLOR = "rgba(0,0,0,0)"  # transparent
-
 
 # -------------------------------------------------------------------------------------------------
 # Color tools
@@ -231,17 +237,30 @@ def companies_in_countries_chart(
 
     fig.update_layout(yaxis=dict(range=[0, y_max_with_rounder(rounder, max_ys)]))
 
-    fig.write_image(chart_file, format="png", engine="kaleido")
+    # fig.write_image(chart_file, format="png", engine="kaleido")
+    pio.write_image(fig, chart_file)
+    if not os.path.exists(chart_file):
+        os_tools.terminating_error(f"Chart file '{chart_file}' was not created.")
 
     print(f"{os_tools.end_timer()} seconds")
 
     return fig
 
 
-def companies_in_us_states_chart(
-    xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file
+def companies_in_country_region_chart(
+    country_regions,
+    xs,
+    ys,
+    max_ys,
+    figure_count,
+    title,
+    title_x,
+    title_y,
+    total_companies,
+    rounder,
+    chart_file,
 ):
-    print("Building companies in US states chart: ", end="")
+    print(f"Building companies in {country_regions} chart: ", end="")
     os_tools.start_timer()
 
     fig = go.Figure(
@@ -259,45 +278,10 @@ def companies_in_us_states_chart(
 
     set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies)
 
-    if ys:
-        max_ys = max(ys)
-    else:
-        max_ys = 0
-
-    fig.update_layout(yaxis=dict(range=[0, y_max_with_rounder(rounder, max_ys)]))
-
-    fig.write_image(chart_file, format="png", engine="kaleido")
-
-    print(f"{os_tools.end_timer()} seconds")
-
-    return fig
-
-
-def companies_in_canadian_provinces_chart(
-    xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file
-):
-    print("Building companies in Canadian provinces chart: ", end="")
-    os_tools.start_timer()
-
-    fig = go.Figure(
-        [
-            go.Bar(
-                x=xs,
-                y=ys,
-                text=[str(y) for y in ys],
-                marker={"color": generate_color_palette(len(xs)), "line": dict(color="black", width=1)},
-                textposition="outside",
-                insidetextanchor="middle",
-            )
-        ]
-    )
-
-    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies)
-
-    if ys:
-        max_ys = max(ys)
-    else:
-        max_ys = 0
+    # if ys:
+    #     max_ys = max(ys)
+    # else:
+    #     max_ys = 0
 
     fig.update_layout(yaxis=dict(range=[0, y_max_with_rounder(rounder, max_ys)]))
 
@@ -307,7 +291,8 @@ def companies_in_canadian_provinces_chart(
         )
     )
 
-    fig.write_image(chart_file, format="png", engine="kaleido")
+    # fig.write_image(chart_file, format="png", engine="kaleido")
+    pio.write_image(fig, chart_file)
 
     print(f"{os_tools.end_timer()} seconds")
 
@@ -373,7 +358,8 @@ def companies_in_regions_chart(
         ]
     )
 
-    fig.write_image(chart_file, format="png", engine="kaleido")
+    # fig.write_image(chart_file, format="png", engine="kaleido")
+    pio.write_image(fig, chart_file)
 
     print(f"{os_tools.end_timer()} seconds")
 
@@ -406,7 +392,8 @@ def years_founded_chart(xs, ys, figure_count, title, title_x, title_y, total_com
 
     fig.update_layout(yaxis=dict(range=[0, y_max_with_rounder(rounder, max_ys)]))
 
-    fig.write_image(chart_file, format="png", engine="kaleido")
+    # fig.write_image(chart_file, format="png", engine="kaleido")
+    pio.write_image(fig, chart_file)
 
     print(f"{os_tools.end_timer()} seconds")
 

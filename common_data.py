@@ -2,10 +2,10 @@
 # Common data used across all reports
 # -------------------------------------------------------------------------------------------------
 
-# cspell:ignore FUTURUM Aptos
+# cspell:ignore FUTURUM Aptos substack
 
+import os
 from datetime import date
-from datetime import datetime
 
 # -------------------------------------------------------------------------------------------------
 # Dates
@@ -22,11 +22,15 @@ THIS_YEAR = REPORT_DATE.strftime("%Y")
 # Global options
 # -------------------------------------------------------------------------------------------------
 
+CHART_PORTRAIT_MODE = True
+BIG_LANDSCAPE = False
+
 FOR_FUTURUM = False
 SHOW_CHART_LOGOS = False
-SHOW_FIGURE_NUMBERS = False
+SHOW_FIGURE_NUMBERS = True
 
-CHART_PORTRAIT_MODE = True
+BIG_LANDSCAPE_CHART_WIDTH = 2500
+BIG_LANDSCAPE_CHART_HEIGHT = 1406
 
 LANDSCAPE_CHART_WIDTH = 1920
 LANDSCAPE_CHART_HEIGHT = 1080
@@ -41,6 +45,9 @@ if FOR_FUTURUM:
 if CHART_PORTRAIT_MODE:
     CHART_WIDTH = PORTRAIT_CHART_WIDTH
     CHART_HEIGHT = PORTRAIT_CHART_HEIGHT
+elif BIG_LANDSCAPE:
+    CHART_WIDTH = BIG_LANDSCAPE_CHART_WIDTH
+    CHART_HEIGHT = BIG_LANDSCAPE_CHART_HEIGHT
 else:
     CHART_WIDTH = LANDSCAPE_CHART_WIDTH
     CHART_HEIGHT = LANDSCAPE_CHART_HEIGHT
@@ -60,6 +67,7 @@ QR_CODE = "input/images/SG-qr-code-crimson.png"
 
 FEATURED_IMAGE_PATH = "input/images/copilot-quantum-ai-substack.png"
 
+CC_BY_SA_LICENSE_PATH = "input/images/by-sa.png"
 SUTOR_GROUP_LOGO_PATH = "input/images/SG-logo-Harvard-Crimson.jpg"
 FUTURUM_LOGO_PATH = "input/images/futurum_logo.png"
 FUTURUM_TRANS_LOGO_PATH = "input/images/futurum_logo_trans.png"
@@ -77,7 +85,14 @@ FUTURUM_BLUE = "#007ea7"
 
 FUTURUM_COLORS = [FUTURUM_TEAL, FUTURUM_LIGHT_BLUE, FUTURUM_RED, FUTURUM_BLUE]
 
-DISCLOSURE_FILE = "../../data/disclosures.html"
+
+IN_DATA_FOLDER = os.getcwd().endswith("\\data")
+
+if IN_DATA_FOLDER:
+    DISCLOSURE_FILE = "disclosures.html"
+else:
+    DISCLOSURE_FILE = "../../data/disclosures.html"
+
 with open(DISCLOSURE_FILE, "rt", encoding="utf8") as input_file:
     THE_DISCLOSURES = " ".join(input_file.readlines())
     THE_DISCLOSURES = THE_DISCLOSURES.replace("\n", "")
@@ -85,7 +100,11 @@ with open(DISCLOSURE_FILE, "rt", encoding="utf8") as input_file:
 while "  " in THE_DISCLOSURES:
     THE_DISCLOSURES = THE_DISCLOSURES.replace("  ", " ")
 
-SUTOR_GROUP_FILE = "../../data/sutor-group.html"
+if IN_DATA_FOLDER:
+    SUTOR_GROUP_FILE = "sutor-group.html"
+else:
+    SUTOR_GROUP_FILE = "../../data/sutor-group.html"
+
 with open(SUTOR_GROUP_FILE, "rt", encoding="utf8") as input_file:
     THE_SUTOR_GROUP = " ".join(input_file.readlines())
     THE_SUTOR_GROUP = THE_SUTOR_GROUP.replace("\n", "")
@@ -93,13 +112,19 @@ with open(SUTOR_GROUP_FILE, "rt", encoding="utf8") as input_file:
 while "  " in THE_SUTOR_GROUP:
     THE_SUTOR_GROUP = THE_SUTOR_GROUP.replace("  ", " ")
 
-COPYRIGHT_AND_LICENSE_FILE = "../../data/copyright-license-notice.html"
+if IN_DATA_FOLDER:
+    COPYRIGHT_AND_LICENSE_FILE = "copyright-license-notice.html"
+else:
+    COPYRIGHT_AND_LICENSE_FILE = "../../data/copyright-license-notice.html"
+
 with open(COPYRIGHT_AND_LICENSE_FILE, "rt", encoding="utf8") as input_file:
     COPYRIGHT_AND_LICENSE = " ".join(input_file.readlines())
     COPYRIGHT_AND_LICENSE = COPYRIGHT_AND_LICENSE.replace("\n", "")
 
 while "  " in COPYRIGHT_AND_LICENSE:
     COPYRIGHT_AND_LICENSE = COPYRIGHT_AND_LICENSE.replace("  ", " ")
+
+UNBREAKABLE_SPACE = " "
 
 FOOTER_DATE_STYLE = f"""
 @media print {{

@@ -6,7 +6,7 @@ import pyperclip  # type: ignore
 
 USE_ENTITIES = True
 
-LINE_LENGTH = 70
+LINE_LENGTH = 80
 
 output = io.StringIO()
 
@@ -36,6 +36,17 @@ if USE_ENTITIES:
 
 while "  " in text:
     text = text.replace("  ", " ")
+
+text = text.strip()
+
+if text[-1] not in [".", "!", "?", ">"]:
+    print(text[-1])
+    text += "."
+
+text = text.replace("<p> ", "<p>")
+text = text.replace("</p> ", "</p>")
+text = text.replace(" <p>", "<p>")
+text = text.replace(" </p>", "</p>")
 
 new_text_list: list[str] = []
 
