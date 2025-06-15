@@ -422,7 +422,6 @@ for _region_abbreviation, _region_data in regions_data.items():
 
 # U.S. states and territories
 
-
 us_states_and_territories = {
     "AL": "Alabama",
     "AK": "Alaska",
@@ -482,7 +481,6 @@ us_states_and_territories = {
     "WY": "Wyoming",
 }
 
-
 us_state_counts: dict[str, int] = dict()
 
 for _state in us_states_and_territories.values():
@@ -541,7 +539,6 @@ us_governors = {
     "Wyoming": {"Governor": "Mark Gordon", "Party": "Republican"},
 }
 
-
 # Canadian provinces and territories
 
 canadian_provinces_and_territories = {
@@ -577,7 +574,6 @@ australian_states_and_territories = {
     "VIC": "Victoria",
     "WA": "Western Australia",
 }
-
 
 # German federal states
 
@@ -629,6 +625,18 @@ french_region_counts: dict[str, int] = dict()
 
 for _region in french_current_regions_names:
     french_region_counts[_region] = 0
+
+japanese_regions = [
+    "Chubu",
+    "Chugoku",
+    "Hokkaido",
+    "Kansai",
+    "Kanto",
+    "Kyushu",
+    "Okinawa",
+    "Shikoku",
+    "Tohoku",
+]
 
 # cspell:enable
 
