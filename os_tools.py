@@ -56,10 +56,15 @@ def end_timer():
 
 
 def format_iso_date(date: str, include_day_of_week=False) -> str:
-    if include_day_of_week:
-        return datetime.fromisoformat(date).strftime("%A, %B %d, %Y").replace(" 0", " ")
-    else:
-        return datetime.fromisoformat(date).strftime("%B %d, %Y").replace(" 0", " ")
+    try:
+        if include_day_of_week:
+            return datetime.fromisoformat(date).strftime("%A, %B %d, %Y").replace(" 0", " ")
+        else:
+            return datetime.fromisoformat(date).strftime("%B %d, %Y").replace(" 0", " ")
+    except ValueError as exc:
+        raise ValueError(f"Problem with date: {date}") from exc
+
+    return "WHOOPS"
 
 
 def kill_acrobat() -> None:

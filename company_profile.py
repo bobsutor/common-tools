@@ -5,9 +5,18 @@ from datetime import date, datetime
 
 import os_tools
 import yattag
-from common_data import COMPANY_DATA_FOLDER
+from common_data import COMPANY_DATA_FOLDER, DATA_FOLDER
 
 TODAY_YY_MM_DD = date.today().strftime("%Y-%m-%d")
+
+PRESS_RELEASES_FILE = "press-releases-and-blogs.json"
+NEWS_FILE = "news-and-other-announcements.json"
+
+with open(f"{DATA_FOLDER}/{PRESS_RELEASES_FILE}", "rt", encoding="utf8") as file:
+    press_releases = json.load(file)
+
+with open(f"{DATA_FOLDER}/{NEWS_FILE}", "rt", encoding="utf8") as file:
+    news = json.load(file)
 
 
 def is_within_last_year(reference_date_str: str, target_date_str: str) -> bool:
@@ -50,11 +59,13 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
     input_json = f"{COMPANY_DATA_FOLDER}{company_name}.json"
 
     company_data = dict()
+    name = ""
 
     try:
         with open(input_json, "rt", encoding="utf8") as json_file:
-            for _, data in json.load(json_file).items():
-                company_data = data
+            for name_, data_ in json.load(json_file).items():
+                name = name_
+                company_data = data_
                 break
 
     except FileNotFoundError as exc:
@@ -84,17 +95,6 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
             ):
                 text(company_data["financial"]["ticker-symbol"])
             text(")")
-
-        # if company_data["links"]["Crunchbase"]:
-        #     text(" (")
-        #     with tag(
-        #         "a",
-        #         href=company_data["links"]["Crunchbase"],
-        #         target="_blank",
-        #         title="Get company information from Crunchbase",
-        #     ):
-        #         text("Crunchbase")
-        #     text(")")
 
     if company_data["contact-info"]["email"]:
         with tag("p", style=p_style):
@@ -209,60 +209,82 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
                         text(", ")
                         text(role)
 
-    if "announcements" in company_data and company_data["announcements"]:
-        # if the first one has no link, it is a template
-        if company_data["announcements"][0]["link"]:
-            announcements = sorted(company_data["announcements"], reverse=True, key=lambda x: x["date"])
-            filtered_announcements = []
-            for announcement in announcements:
-                if announcement["date"] and not is_within_last_year(TODAY_YY_MM_DD, announcement["date"]):
-                    continue
+    # Show recent press releases and blog posts if there are any
 
-                if not announcement["link"]:
-                    continue
+    company_press_releases = []  # type: ignore
 
-                filtered_announcements.append(announcement)
+    for press_release_key, press_release_data in press_releases.items():
+        if name in press_release_data["companies"]:
+            print(press_release_key[:11])
+            company_press_releases.append(
+                {
+                    "date": press_release_key[:10],
+                    "title": press_release_key[12:],
+                    "link": press_release_data["link"],
+                }
+            )
 
-            if filtered_announcements:
-                with tag(heading_level):
-                    text("Selected Recent News and Announcements")
+    if company_press_releases:
+        filtered_announcements = []
+        for announcement in company_press_releases:
+            if announcement["date"] and not is_within_last_year(TODAY_YY_MM_DD, announcement["date"]):
+                continue
 
-                with tag("ul"):
-                    for announcement in filtered_announcements:
-                        with tag("li"):
-                            if announcement["date"]:
-                                text(os_tools.format_iso_date(announcement["date"]))
-                                doc.asis(" &ndash; ")
+            if not announcement["link"]:
+                continue
 
-                            with tag("a", href=announcement["link"], target="_blank"):
-                                text(announcement["title"])
+            filtered_announcements.append(announcement)
 
-    if "related-content" in company_data and company_data["related-content"]:
-        # if the first one has no link, it is a template
-        if company_data["related-content"][0]["link"]:
-            announcements = sorted(company_data["related-content"], reverse=True, key=lambda x: x["date"])
-            filtered_announcements = []
-            for announcement in announcements:
-                if announcement["date"] and not is_within_last_year(TODAY_YY_MM_DD, announcement["date"]):
-                    continue
+        if filtered_announcements:
+            with tag(heading_level):
+                text("Selected Recent Press Releases and Blog Posts")
 
-                if not announcement["link"]:
-                    continue
-
-                filtered_announcements.append(announcement)
-
-            if filtered_announcements:
-                with tag(heading_level):
-                    text("Related Content and Analysis")
-
-                with tag("ul"):
-                    for announcement in filtered_announcements:
-                        with tag("li"):
+            with tag("ul"):
+                for announcement in filtered_announcements:
+                    with tag("li"):
+                        if announcement["date"]:
                             text(os_tools.format_iso_date(announcement["date"]))
                             doc.asis(" &ndash; ")
 
-                            with tag("a", href=announcement["link"], target="_blank"):
-                                text(announcement["title"])
+                        with tag("a", href=announcement["link"], target="_blank"):
+                            text(announcement["title"])
+
+    company_news = []  # type: ignore
+
+    for news_key, news_data in news.items():
+        if name in news_data["companies"]:
+            company_news.append(
+                {
+                    "date": news_key[:10],
+                    "title": news_key[12:],
+                    "link": news_data["link"],
+                }
+            )
+
+    if company_news:
+        filtered_announcements = []
+        for announcement in company_news:
+            if announcement["date"] and not is_within_last_year(TODAY_YY_MM_DD, announcement["date"]):
+                continue
+
+            if not announcement["link"]:
+                continue
+
+            filtered_announcements.append(announcement)
+
+        if filtered_announcements:
+            with tag(heading_level):
+                text("Selected Recent News and Analysis")
+
+            with tag("ul"):
+                for announcement in filtered_announcements:
+                    with tag("li"):
+                        if announcement["date"]:
+                            text(os_tools.format_iso_date(announcement["date"]))
+                            doc.asis(" &ndash; ")
+
+                        with tag("a", href=announcement["link"], target="_blank"):
+                            text(announcement["title"])
 
     result = yattag.indent(doc.getvalue())
     # result = doc.getvalue()

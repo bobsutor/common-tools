@@ -669,19 +669,58 @@ indian_states_and_union_territories = [
 ]
 
 
-# Japanese regions
+# Japanese prefectures
 
-japanese_regions = [
-    "Chubu",
-    "Chugoku",
+japanese_prefectures = [
+    "Aichi",
+    "Akita",
+    "Aomori",
+    "Chiba",
+    "Ehime",
+    "Fukui",
+    "Fukuoka",
+    "Fukushima",
+    "Gifu",
+    "Gunma",
+    "Hiroshima",
     "Hokkaido",
-    "Kansai",
-    "Kanto",
-    "Kyushu",
+    "Hyogo",
+    "Ibaraki",
+    "Ishikawa",
+    "Iwate",
+    "Kagawa",
+    "Kagoshima",
+    "Kanagawa",
+    "Kochi",
+    "Kumamoto",
+    "Kyoto",
+    "Mie",
+    "Miyagi",
+    "Miyazaki",
+    "Nagano",
+    "Nagasaki",
+    "Nara",
+    "Niigata",
+    "Oita",
+    "Okayama",
     "Okinawa",
-    "Shikoku",
-    "Tohoku",
+    "Osaka",
+    "Saga",
+    "Saitama",
+    "Shiga",
+    "Shimane",
+    "Shizuoka",
+    "Tochigi",
+    "Tokushima",
+    "Tokyo",
+    "Tottori",
+    "Toyama",
+    "Wakayama",
+    "Yamagata",
+    "Yamaguchi",
+    "Yamanashi",
 ]
+
 
 # cspell:enable
 

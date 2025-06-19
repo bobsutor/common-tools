@@ -6,7 +6,7 @@ import pyperclip  # type: ignore
 
 USE_ENTITIES = True
 
-LINE_LENGTH = 80
+LINE_LENGTH = 90
 
 output = io.StringIO()
 
