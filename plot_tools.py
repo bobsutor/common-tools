@@ -19,6 +19,7 @@ from common_data import (
     BANANA_YELLOW,
     CHART_HEIGHT,
     CHART_WIDTH,
+    COPYRIGHT,
     FOR_FUTURUM,
     FUTURUM_COLORS,
     FUTURUM_LOGO_PATH,
@@ -26,6 +27,8 @@ from common_data import (
     ROYAL_BLUE,
     SHOW_CHART_LOGOS,
     SHOW_FIGURE_NUMBERS,
+    SHOW_SUTOR_GROUP_COPYRIGHT,
+    SHOW_TITLE,
     SUTOR_GROUP_LOGO_PATH,
 )
 from PIL import Image
@@ -158,11 +161,17 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
     font_spec["weight"] = "bold"
     font_spec["color"] = "black"
 
-    figure.update_layout(title={"text": title, "x": 0.5, "automargin": False, "font": font_spec})
+    copyright_style = "font-size: 22pt; font-weight: normal; font-style: italic;"
 
     if SHOW_FIGURE_NUMBERS:
         figure.update_layout(
             xaxis_title=title_x + f"<br><br>Figure {figure_count}",
+            xaxis_title_font=dict(weight="bold", size=36),
+        )
+
+    elif SHOW_SUTOR_GROUP_COPYRIGHT:
+        figure.update_layout(
+            xaxis_title=f"{title_x}<br><br><span style='{copyright_style}'>{COPYRIGHT}</span>",
             xaxis_title_font=dict(weight="bold", size=36),
         )
     else:
@@ -170,43 +179,89 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
 
     figure.update_layout(yaxis_title=title_y, yaxis_title_font=dict(weight="bold", size=36))
 
-    if total_companies > 0:
-        font_spec["size"] = 38
-        font_spec["weight"] = "bold"
+    font_spec["size"] = 38
+    font_spec["weight"] = "bold"
 
-        figure.update_layout(
-            title=dict(
-                subtitle=dict(text=f"Total Number of Distinct Companies = {total_companies}", font=font_spec)
+    if total_companies > 0:
+        if SHOW_TITLE and title:
+            figure.update_layout(title={"text": title, "x": 0.5, "automargin": False, "font": font_spec})
+            figure.update_layout(
+                title=dict(
+                    subtitle=dict(
+                        text=f"Total Number of Distinct Companies = {total_companies}",
+                        font=font_spec,
+                    )
+                )
             )
-        )
+        else:
+            figure.update_layout(
+                title={
+                    "text": f"Total Number of Distinct Companies = {total_companies}",
+                    "x": 0.5,
+                    "automargin": False,
+                    "font": font_spec,
+                }
+            )
+            # figure.update_layout(
+            #     title=dict(
+            #         subtitle=dict(
+            #             text=f"Total Number of Distinct Companies = {total_companies}", font=font_spec
+            #         )
+            #     )
+            # )
+    elif SHOW_TITLE and title:
+        figure.update_layout(title={"text": title, "x": 0.5, "automargin": False, "font": font_spec})
 
     # Margins
 
     figure.update_layout(
         margin=dict(
-            l=100,  # Set the left margin to 50 pixels
+            l=50,  # Left margin
             r=20,  # Right margin
-            # t=20,  # Top margin
-            # b=20   # Bottom margin
+            # t=200,  # Top margin
+            # b=60,  # Bottom margin
         )
     )
 
+    # Add centered annotation at the bottom, outside the plot area
+    # if SHOW_SUTOR_GROUP_COPYRIGHT:
+    #     figure.add_annotation(
+    #         text=COPYRIGHT,
+    #         xref="paper",
+    #         yref="paper",
+    #         x=0.5,
+    #         y=-0.3,  # Centered horizontally, at the very bottom
+    #         xanchor="center",
+    #         yanchor="bottom",
+    #         showarrow=False,
+    #         font=dict(size=24),
+    #     )
+
+    #     figure.update_layout(
+    #         margin=dict(
+    #             b=500,  # Bottom margin
+    #         )
+    #     )
+
     # Logo
 
-    if SHOW_CHART_LOGOS:
-        figure.add_layout_image(
-            dict(
-                source=LOGO,
-                xref="paper",
-                yref="paper",
-                x=0.01,
-                y=1.0,
-                sizex=STRETCH,
-                sizey=STRETCH,
-                opacity=1.0,
-                layer="above",
-            )
-        )
+    # if SHOW_CHART_LOGOS:
+    #     figure.add_layout_image(
+    #         dict(
+    #             source=LOGO,
+    #             xref="paper",
+    #             yref="paper",
+    #             x=1.0,
+    #             y=1.1,
+    #             sizex=STRETCH,
+    #             sizey=STRETCH,
+    #             sizing="contain",
+    #             opacity=1.0,
+    #             xanchor="right",
+    #             yanchor="top",
+    #             layer="above",
+    #         )
+    #     )
 
 
 def companies_in_countries_chart(
