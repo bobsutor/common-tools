@@ -14,13 +14,19 @@ with open(NEWS_FILE, "rt", encoding="utf8") as file:
     news = json.load(file)
 
 for d in [press_releases, news]:
-    for data in d.values():
+    for key, data in d.items():
         if "date" in data:
             del data["date"]
         if "title" in data:
             del data["title"]
 
         data["companies"].sort(key=str.casefold)
+
+        if "http" in key:
+            raise ValueError(f"Bad key: {key}")
+
+        if "http" not in data["link"]:
+            raise ValueError(f"Bad link: {data['link']}")
 
 press_releases = dict(sorted(press_releases.items(), reverse=True, key=lambda item: item[0].casefold()))
 news = dict(sorted(news.items(), reverse=True, key=lambda item: item[0].casefold()))

@@ -22,7 +22,7 @@ THIS_YEAR = REPORT_DATE.strftime("%Y")
 # Global options
 # -------------------------------------------------------------------------------------------------
 
-REPORT_MODE = False
+REPORT_MODE = True
 
 if REPORT_MODE:
     CHART_PORTRAIT_MODE = True

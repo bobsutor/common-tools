@@ -5,7 +5,7 @@
 # cspell:ignore APAC Aptos automargin categoryarray categoryorder EMEA Futurum gridcolor
 # cspell:ignore gridwidth insidetextanchor LATAM linecolor OxmlElement qn showgrid showline
 # cspell:ignore sizex sizey textangle textfont textposition tickangle tickfont tickmode
-# cspell:ignore twips xaxes xaxis yaxes yaxis yref
+# cspell:ignore twips xaxes xaxis yaxes yaxis yref xanchor dtick yanchor
 
 
 import math
@@ -164,10 +164,17 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
     copyright_style = "font-size: 22pt; font-weight: normal; font-style: italic;"
 
     if SHOW_FIGURE_NUMBERS:
-        figure.update_layout(
-            xaxis_title=title_x + f"<br><br>Figure {figure_count}",
-            xaxis_title_font=dict(weight="bold", size=36),
-        )
+        if SHOW_SUTOR_GROUP_COPYRIGHT:
+            figure.update_layout(
+                xaxis_title=f"{title_x}<br><br>Figure {figure_count}<br><br>"
+                + f"<span style='{copyright_style}'>{COPYRIGHT}</span>",
+                xaxis_title_font=dict(weight="bold", size=36),
+            )
+        else:
+            figure.update_layout(
+                xaxis_title=f"{title_x}<br><br>Figure {figure_count}",
+                xaxis_title_font=dict(weight="bold", size=36),
+            )
 
     elif SHOW_SUTOR_GROUP_COPYRIGHT:
         figure.update_layout(
@@ -223,45 +230,24 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
         )
     )
 
-    # Add centered annotation at the bottom, outside the plot area
-    # if SHOW_SUTOR_GROUP_COPYRIGHT:
-    #     figure.add_annotation(
-    #         text=COPYRIGHT,
-    #         xref="paper",
-    #         yref="paper",
-    #         x=0.5,
-    #         y=-0.3,  # Centered horizontally, at the very bottom
-    #         xanchor="center",
-    #         yanchor="bottom",
-    #         showarrow=False,
-    #         font=dict(size=24),
-    #     )
-
-    #     figure.update_layout(
-    #         margin=dict(
-    #             b=500,  # Bottom margin
-    #         )
-    #     )
-
     # Logo
 
-    # if SHOW_CHART_LOGOS:
-    #     figure.add_layout_image(
-    #         dict(
-    #             source=LOGO,
-    #             xref="paper",
-    #             yref="paper",
-    #             x=1.0,
-    #             y=1.1,
-    #             sizex=STRETCH,
-    #             sizey=STRETCH,
-    #             sizing="contain",
-    #             opacity=1.0,
-    #             xanchor="right",
-    #             yanchor="top",
-    #             layer="above",
-    #         )
-    #     )
+    if SHOW_CHART_LOGOS:
+        figure.add_layout_image(
+            dict(
+                source=LOGO,
+                xref="paper",
+                yref="paper",
+                x=0.5,
+                y=0.5,
+                sizex=STRETCH,
+                sizey=STRETCH,
+                opacity=1.0,
+                xanchor="center",
+                yanchor="center",
+                layer="below",
+            )
+        )
 
 
 def companies_in_countries_chart(
