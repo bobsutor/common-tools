@@ -9,6 +9,10 @@ from common_data import DATA_FOLDER
 PRESS_RELEASES_FILE = DATA_FOLDER + "/press-releases-and-blogs.json"
 NEWS_FILE = DATA_FOLDER + "news-and-other-announcements.json"
 
+month_stats: dict[int, int] = dict()
+for x in range(1, 13):
+    month_stats[x] = 0
+
 
 def is_date_later_than_today(date_string):
     """
@@ -67,6 +71,8 @@ for d in [press_releases, news]:
         if is_date_later_than_today(key[0:10]):
             raise ValueError(f"Bad key contains date after today: {key}")
 
+        month_stats[int(key[5:7])] += 1
+
 press_releases = dict(sorted(press_releases.items(), reverse=True, key=lambda item: item[0].casefold()))
 news = dict(sorted(news.items(), reverse=True, key=lambda item: item[0].casefold()))
 
@@ -75,3 +81,6 @@ with open(PRESS_RELEASES_FILE, "wt", encoding="utf8") as file:
 
 with open(NEWS_FILE, "wt", encoding="utf8") as file:
     json.dump(news, file, indent=4, ensure_ascii=False)
+
+
+print(month_stats)
