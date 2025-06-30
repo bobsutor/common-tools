@@ -10,8 +10,8 @@ from common_data import HARVARD_CRIMSON
 from docx import Document
 from docx.enum.section import WD_SECTION
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_LINE_SPACING
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
+from docx.oxml import OxmlElement, parse_xml
+from docx.oxml.ns import nsdecls, qn
 from docx.shared import Inches, Pt, RGBColor
 
 # -------------------------------------------------------------------------------------------------
@@ -539,7 +539,6 @@ def convert_html_to_word(html_string, word_document):
 
                 new_paragraph = False
 
-                # print("'" + the_text + "'")
                 run = p_.add_run(the_text)
 
                 if is_italic:
@@ -553,51 +552,3 @@ def convert_html_to_word(html_string, word_document):
         p.add_run(html_string)
     else:
         walk_html(BeautifulSoup(html_string, "html.parser"), None)
-
-
-def insert_index_field(paragraph):
-    """
-    Inserts a Word INDEX field into the specified paragraph.
-
-    When opened in Word, the user will need to update this field
-    to generate the actual index.
-
-    Args:
-        paragraph: The docx.paragraph.Paragraph object where the index field
-                   should be inserted.
-    """
-    # Create the w:fldSimple element for the field
-    fldSimple = OxmlElement("w:fldSimple")
-    fldSimple.set(qn("w:instr"), 'INDEX \\c "2" \\h "A" \\e " " \\g " " \\r " " \\p " "')
-    # Explanation of common INDEX field switches:
-    # \c "2": Specifies a two-column index. You can change this number.
-    # \h "A": Adds a heading for each letter (e.g., "A", "B").
-    # \e " ": Separator between entry and page number (a space here).
-    # \g " ": Separator between range of page numbers (a space here).
-    # \r " ": Separator between page numbers (a space here).
-    # \p " ": Separator for subentries (a space here).
-    # You can customize these switches based on your desired index appearance.
-
-    # Create the run to hold the field
-    run = paragraph.add_run()
-    run._r.append(fldSimple)
-
-    # Add some text before and after the field for better visibility/structure
-    # This is optional, but often useful for layout.
-    paragraph.add_run("--- INDEX START ---")
-    paragraph.add_run().add_break()  # Add a line break
-    paragraph.add_run().add_break()  # Add another line break
-    paragraph.add_run("--- INDEX END ---")
-
-
-# Example of inserting an XE field (Index Entry field)
-# This also uses oxml for the w:fldSimple for the XE field
-# Note: Inserting XE fields correctly is more involved as they often need to be
-# in a run and might require specific text formatting. This is a bare minimum.
-
-
-def add_index_entry(paragraph, text_to_mark, entry_text):
-    fldSimple = OxmlElement("w:fldSimple")
-    fldSimple.set(qn("w:instr"), f'XE "{entry_text}"')
-    run = paragraph.add_run(text_to_mark)
-    run._r.append(fldSimple)

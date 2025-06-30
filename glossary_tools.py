@@ -2,7 +2,8 @@
 Formatting glossary with yattag
 """
 
-# cspell:ignore addnext asis klass oxml OxmlElement qn rangle tagtext vert yattag
+# cspell:ignore addnext asis klass oxml OxmlElement qn rangle tagtext
+# cspell:ignore vert yattag rdquo langle lsquo rsquo
 
 import json
 
@@ -57,6 +58,16 @@ def word_format_glossary_terms(terms, word_document):
     glossary_style.font.italic = False
     glossary_style.font.size = word_document.styles["Normal"].font.size
 
+    entity_substitutions = {
+        "&langle": "\u27e8",
+        "&ldquo;": "\u201c",
+        "&lsquo;": "\u2018",
+        "&rangle;": "\u232a",
+        "&rdquo;": "\u201d",
+        "&rsquo;": "\u2019",
+        "&vert;": "|",
+    }
+
     for term in terms:
         try:
             term_data = glossary[term]
@@ -65,7 +76,13 @@ def word_format_glossary_terms(terms, word_document):
 
         term_id = get_glossary_id(term)
 
-        p = word_document.add_paragraph(term, style="GlossaryAppendix")
+        term_text = term
+        for entity, new_expression in entity_substitutions.items():
+            term_text = term_text.replace(entity, new_expression)
+        if "&" in term_text:
+            print(f"Warning: '&' in glossary term '{term_text}'")
+
+        p = word_document.add_paragraph(term_text, style="GlossaryAppendix")
         p.paragraph_format.space_after = Pt(0)
         p.paragraph_format.keep_with_next = True
 
@@ -86,6 +103,12 @@ def word_format_glossary_terms(terms, word_document):
         # pylint: enable=W0212
 
         glossary_text = " ".join(term_data["definition"])
+
+        for entity, new_expression in entity_substitutions.items():
+            glossary_text = glossary_text.replace(entity, new_expression)
+        if "&" in glossary_text:
+            print(f"Warning: '&' in glossary text '{glossary_text}'")
+
         docx_tools.convert_html_to_word(glossary_text, word_document)
         p = word_document.paragraphs[-1]
 
