@@ -83,6 +83,14 @@ def word_format_glossary_terms(terms, word_document):
             print(f"Warning: '&' in glossary term '{term_text}'")
 
         p = word_document.add_paragraph(term_text, style="GlossaryAppendix")
+
+        if term_text.endswith(" modality"):
+            docx_tools.mark_index_entry("modality:" + term_text.replace(" modality", ""), p)
+        elif term_text.endswith(" paradigm"):
+            docx_tools.mark_index_entry("paradigm:" + term_text.replace(" paradigm", ""), p)
+
+        docx_tools.mark_index_entry(term_text, p)
+
         p.paragraph_format.space_after = Pt(0)
         p.paragraph_format.keep_with_next = True
 

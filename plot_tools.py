@@ -11,24 +11,28 @@
 import math
 import os
 
-import geo_tools
-import os_tools
 import plotly.graph_objects as go  # type: ignore
 import plotly.io as pio  # type: ignore
-from common_data import BANANA_YELLOW
-from common_data import CHART_HEIGHT
-from common_data import CHART_WIDTH
-from common_data import COPYRIGHT
-from common_data import HARVARD_CRIMSON
-from common_data import ROYAL_BLUE
-from common_data import SHOW_CHART_LOGOS
-from common_data import SHOW_FIGURE_NUMBERS
-from common_data import SHOW_SUTOR_GROUP_COPYRIGHT
-from common_data import SHOW_TITLE
-from common_data import SUTOR_GROUP_LOGO_PATH
-from common_data import USE_PLEX
 from PIL import Image
 from sty import fg  # type: ignore
+
+import docx_tools
+import geo_tools
+import os_tools
+from common_data import (
+    BANANA_YELLOW,
+    CHART_HEIGHT,
+    CHART_WIDTH,
+    COPYRIGHT,
+    HARVARD_CRIMSON,
+    ROYAL_BLUE,
+    SHOW_CHART_LOGOS,
+    SHOW_FIGURE_NUMBERS,
+    SHOW_SUTOR_GROUP_COPYRIGHT,
+    SHOW_TITLE,
+    SUTOR_GROUP_LOGO_PATH,
+    USE_PLEX,
+)
 
 # import time
 
@@ -424,5 +428,7 @@ def years_founded_chart(xs, ys, figure_count, title, title_x, title_y, total_com
     pio.write_image(fig, chart_file)
 
     print(f"{os_tools.end_timer()} seconds")
+
+    return fig
 
     return fig

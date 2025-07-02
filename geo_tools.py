@@ -4,10 +4,11 @@ Formatting glossary with yattag
 
 # cspell:ignore addnext Aptos klass Oxml OxmlElement Pt yattag
 
-import docx_tools
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt
+
+import docx_tools
 
 # cspell:disable
 
@@ -920,6 +921,7 @@ def write_region_word_appendix(id_, appendix_title, word_document):
         p = word_document.add_paragraph(
             f"{region_abbreviation} – {region_data['name']}", style="RegionAppendix"
         )
+        docx_tools.mark_index_entry(region_abbreviation, p)
         p.paragraph_format.space_after = Pt(0)
         p.paragraph_format.keep_with_next = True
 
