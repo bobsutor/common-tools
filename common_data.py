@@ -22,6 +22,7 @@ THIS_YEAR = REPORT_DATE.strftime("%Y")
 # Global options
 # -------------------------------------------------------------------------------------------------
 
+USE_PLEX = True
 REPORT_MODE = True
 
 if REPORT_MODE:
@@ -39,8 +40,6 @@ else:
     SHOW_SUTOR_GROUP_COPYRIGHT = False
     SHOW_TITLE = True
 
-FOR_FUTURUM = False
-
 BIG_LANDSCAPE_CHART_WIDTH = 2500
 BIG_LANDSCAPE_CHART_HEIGHT = 1406
 
@@ -49,10 +48,6 @@ LANDSCAPE_CHART_HEIGHT = 1080
 
 PORTRAIT_CHART_WIDTH = 1920
 PORTRAIT_CHART_HEIGHT = 1920
-
-if FOR_FUTURUM:
-    CHART_PORTRAIT_MODE = False
-    SHOW_FIGURE_NUMBERS = False
 
 if CHART_PORTRAIT_MODE:
     CHART_WIDTH = PORTRAIT_CHART_WIDTH
@@ -81,8 +76,6 @@ FEATURED_IMAGE_PATH = "input/images/copilot-quantum-ai-substack.png"
 
 CC_BY_SA_LICENSE_PATH = "input/images/by-sa.png"
 SUTOR_GROUP_LOGO_PATH = "input/images/SG-logo-Harvard-Crimson.jpg"
-FUTURUM_LOGO_PATH = "input/images/futurum_logo.png"
-FUTURUM_TRANS_LOGO_PATH = "input/images/futurum_logo_trans.png"
 
 CSS_FILE = "css/sutor-group-report-style.css"
 
@@ -90,12 +83,16 @@ HARVARD_CRIMSON = "#A51C30"
 BANANA_YELLOW = "#FFE135"
 ROYAL_BLUE = "#0044B9"
 
-FUTURUM_TEAL = "#007079"
-FUTURUM_LIGHT_BLUE = "#00a8e8"
-FUTURUM_RED = "#8f0040"
-FUTURUM_BLUE = "#007ea7"
-
-FUTURUM_COLORS = [FUTURUM_TEAL, FUTURUM_LIGHT_BLUE, FUTURUM_RED, FUTURUM_BLUE]
+if USE_PLEX:
+    WORD_DEFAULT_TEMPLATE = "input/word-report-template-crimson-plex.docx"
+    WORD_LIST_TEMPLATE = "input/styles-for-lists-template-plex.docx"
+    SANS_SERIF_FONT = "IBM Plex Sans"
+    TABLE_FONT_SIZE_REDUCER = 3
+else:
+    WORD_DEFAULT_TEMPLATE = "input/word-report-template-crimson.docx"
+    WORD_LIST_TEMPLATE = "input/styles-for-lists-template.docx"
+    SANS_SERIF_FONT = "Aptos"
+    TABLE_FONT_SIZE_REDUCER = 2
 
 
 IN_DATA_FOLDER = os.getcwd().endswith("\\data")

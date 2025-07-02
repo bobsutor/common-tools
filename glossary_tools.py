@@ -11,7 +11,7 @@ import docx_tools
 import os_tools
 
 # import yattag
-# from common_data import CSS_FILE
+from common_data import SANS_SERIF_FONT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt
@@ -53,7 +53,7 @@ def html_format_glossary_term(term, yattag_doc, yattag_tag, yattag_text):
 def word_format_glossary_terms(terms, word_document):
     # Create a custom region style
     glossary_style = word_document.styles.add_style("GlossaryAppendix", 1)
-    glossary_style.font.name = "Arial"
+    glossary_style.font.name = SANS_SERIF_FONT
     glossary_style.font.bold = True
     glossary_style.font.italic = False
     glossary_style.font.size = word_document.styles["Normal"].font.size

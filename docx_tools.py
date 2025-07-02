@@ -6,12 +6,11 @@ from copy import copy
 
 import docx
 from bs4 import BeautifulSoup
-from common_data import HARVARD_CRIMSON
-from docx import Document
+from common_data import HARVARD_CRIMSON, SANS_SERIF_FONT
 from docx.enum.section import WD_SECTION
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_LINE_SPACING
-from docx.oxml import OxmlElement, parse_xml
-from docx.oxml.ns import nsdecls, qn
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
 # -------------------------------------------------------------------------------------------------
@@ -171,6 +170,8 @@ def insert_word_toc(document):
     # Code for making Table of Contents
     # Source: https://stackoverflow.com/questions/18595864/python-create-a-table-of-contents-with-python-docx-lxml
 
+    # style = document.styles["TOC1"]
+
     paragraph = document.add_paragraph()
     run = paragraph.add_run()
 
@@ -311,6 +312,7 @@ def set_word_table_heading_cell_colors(cell):
         # p.paragraph_format.space_after = Pt(3)
         for run in p.runs:
             run.font.color.rgb = RGBColor(255, 255, 255)  # white
+            run.font.name = SANS_SERIF_FONT
 
 
 def set_word_table_cell_colors(cell, row_index):
@@ -552,3 +554,93 @@ def convert_html_to_word(html_string, word_document):
         p.add_run(html_string)
     else:
         walk_html(BeautifulSoup(html_string, "html.parser"), None)
+
+
+# -------------------------------------------------------------------------------------------------
+# Index
+# -------------------------------------------------------------------------------------------------
+
+
+def mark_index_entry(entry, paragraph):
+    run = paragraph.add_run()
+    r = run._r
+
+    fldChar = OxmlElement("w:fldChar")
+    fldChar.set(qn("w:fldCharType"), "begin")
+    r.append(fldChar)
+
+    run = paragraph.add_run()
+    r = run._r
+
+    instrText = OxmlElement("w:instrText")
+    instrText.set(qn("xml:space"), "preserve")
+    # instrText.text = ' XE "%s" ' % (entry)  # type: ignore
+
+    if entry[0].isalnum():
+        instrText.text = f' XE "{entry}" '  # type: ignore
+    else:
+        instrText.text = f' XE "{entry};{entry[1:]}" '  # type: ignore
+
+    r.append(instrText)
+
+    run = paragraph.add_run()
+    r = run._r
+
+    fldChar = OxmlElement("w:fldChar")
+    fldChar.set(qn("w:fldCharType"), "separate")
+    r.append(fldChar)
+
+    run = paragraph.add_run()
+    r = run._r
+
+    fldChar = OxmlElement("w:fldChar")
+    fldChar.set(qn("w:fldCharType"), "end")
+    r.append(fldChar)
+
+
+def insert_word_index(document):
+    # Code for making an Index
+    # Source: https://stackoverflow.com/questions/18595864/python-create-a-table-of-contents-with-python-docx-lxml
+
+    paragraph = document.add_paragraph()
+    run = paragraph.add_run()
+
+    # pylint: disable=W0212
+
+    fldChar = OxmlElement("w:fldChar")  # creates a new element
+    fldChar.set(qn("w:fldCharType"), "begin")  # sets attribute on element
+
+    instrText = OxmlElement("w:instrText")
+    instrText.set(qn("xml:space"), "preserve")  # sets attribute on element
+    instrText.text = 'INDEX \\c 2 \\h "A" \\z "1033" }'  # type: ignore
+
+    fldChar2 = OxmlElement("w:fldChar")
+    fldChar2.set(qn("w:fldCharType"), "separate")
+
+    fldChar3 = OxmlElement("w:t")
+    fldChar3.text = "Right-click to update field."  # type: ignore
+
+    fldChar2.append(fldChar3)
+
+    fldChar4 = OxmlElement("w:fldChar")
+    fldChar4.set(qn("w:fldCharType"), "end")
+
+    r_element = run._r
+    r_element.append(fldChar)
+    r_element.append(instrText)
+    r_element.append(fldChar2)
+    r_element.append(fldChar4)
+
+    # p_element = paragraph._p
+    run.font.underline = False
+    # pylint: enable=W0212
+
+
+def insert_index(document):
+    insert_section_break(document)
+
+    heading = document.add_heading("Index", 1)
+    run = heading.runs[0]
+    add_bookmark_for_id("section-index", run)
+
+    insert_word_index(document)

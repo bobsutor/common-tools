@@ -2,12 +2,14 @@
 
 import json
 import os
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from common_data import DATA_FOLDER
 
 PRESS_RELEASES_FILE = DATA_FOLDER + "/press-releases-and-blogs.json"
 NEWS_FILE = DATA_FOLDER + "news-and-other-announcements.json"
+
+LAST_WEEKS_NEWS = DATA_FOLDER + "/newsletter-entries-from-press-releases.json"
 
 month_stats: dict[int, int] = dict()
 for x in range(1, 13):
@@ -35,6 +37,34 @@ def is_date_later_than_today(date_string):
         return input_date > today
     except ValueError:
         print(f"Error: Invalid date format for '{date_string}'. Please use YYYY-MM-DD.")
+        return False
+
+
+def is_within_X_days(date_string, X_days=8):
+    """
+    Check if a YYYY-MM-DD date string is within 8 days of today.
+
+    Args:
+        date_string (str): Date in YYYY-MM-DD format
+
+    Returns:
+        bool: True if the date is within 8 days (past or future), False otherwise
+    """
+    try:
+        # Parse the input date string
+        input_date = datetime.strptime(date_string, "%Y-%m-%d").date()
+
+        # Get today's date
+        today = datetime.now().date()
+
+        # Calculate the absolute difference in days
+        days_diff = abs((input_date - today).days)
+
+        # Return True if within X_days days
+        return days_diff <= X_days
+
+    except ValueError:
+        # Return False if the date string is invalid
         return False
 
 
@@ -83,4 +113,27 @@ with open(NEWS_FILE, "wt", encoding="utf8") as file:
     json.dump(news, file, indent=4, ensure_ascii=False)
 
 
-print(month_stats)
+newsletter_items = []
+
+# print(month_stats)
+
+for press_release_key, press_release_data in press_releases.items():
+    press_release_date = press_release_key[:10]
+
+    if is_within_X_days(press_release_date):
+        newsletter_items.append(
+            {
+                "include": True,
+                "authors": ["X"],
+                "date": press_release_date,
+                "description": [""],
+                "link": press_release_data["link"],
+                "title": press_release_key[12:],
+                "type": "quantum-computing",
+                "commentary": [""],
+            }
+        )
+
+
+with open(LAST_WEEKS_NEWS, "wt", encoding="utf8") as file:
+    json.dump(newsletter_items, file, indent=4, ensure_ascii=False)
