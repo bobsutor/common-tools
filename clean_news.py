@@ -9,11 +9,7 @@ from common_data import DATA_FOLDER
 PRESS_RELEASES_FILE = DATA_FOLDER + "/press-releases-and-blogs.json"
 NEWS_FILE = DATA_FOLDER + "news-and-other-announcements.json"
 
-LAST_WEEKS_NEWS = DATA_FOLDER + "/newsletter-entries-from-press-releases.json"
-
-month_stats: dict[int, int] = dict()
-for x in range(1, 13):
-    month_stats[x] = 0
+LAST_WEEKS_NEWS = "newsletter-links.json"
 
 
 def is_date_later_than_today(date_string):
@@ -136,7 +132,7 @@ for d in [press_releases, news]:
 
         title = key[12:].casefold()
 
-        data["type"] = ""
+        # data["type"] = ""
 
         if "type" not in data or not data["type"]:
             data["type"] = ""
@@ -146,7 +142,20 @@ for d in [press_releases, news]:
                     data["type"] = type_
                     break
 
-        month_stats[int(key[5:7])] += 1
+        if "description" not in data:
+            data["description"] = [""]
+
+        if "commentary" not in data:
+            data["commentary"] = [""]
+
+        if "authors" not in data:
+            data["authors"] = ["X"]
+
+        if "include" not in data:
+            data["include"] = True
+
+        data = dict(sorted(data.items(), key=lambda item: item[0].casefold()))
+        d[key] = data
 
 press_releases = dict(sorted(press_releases.items(), reverse=True, key=lambda item: item[0].casefold()))
 news = dict(sorted(news.items(), reverse=True, key=lambda item: item[0].casefold()))
@@ -160,8 +169,6 @@ with open(NEWS_FILE, "wt", encoding="utf8") as file:
 
 newsletter_items = []
 
-# print(month_stats)
-
 for d in [press_releases, news]:
     for key, data in d.items():
         date_ = key[:10]
@@ -169,17 +176,19 @@ for d in [press_releases, news]:
         if is_within_X_days(date_):
             newsletter_items.append(
                 {
-                    "include": True,
-                    "authors": ["X"],
+                    "include": data.get("include", True),
+                    "authors": data.get("authors", ["X"]),
                     "date": date_,
-                    "description": [""],
+                    "description": data.get("description", [""]),
                     "link": data["link"],
                     "title": key[12:],
                     "type": data["type"],
-                    "commentary": [""],
+                    "commentary": data.get("commentary", [""]),
                 }
             )
 
+newsletter_items = sorted(newsletter_items, key=lambda x: x["date"], reverse=True)
+
 
 with open(LAST_WEEKS_NEWS, "wt", encoding="utf8") as file:
-    json.dump(newsletter_items, file, indent=4, ensure_ascii=False)
+    json.dump({"quantum": newsletter_items}, file, indent=4, ensure_ascii=False)
