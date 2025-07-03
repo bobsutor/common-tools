@@ -561,12 +561,7 @@ def convert_html_to_word(html_string, word_document):
 # -------------------------------------------------------------------------------------------------
 
 
-def mark_index_entry(entry, paragraph, subentry=None):
-    if subentry is not None:
-        subentry_code = f":{subentry}"
-    else:
-        subentry_code = ""
-
+def mark_index_entry(entry, paragraph, italicize=False):
     run = paragraph.add_run()
     r = run._r
 
@@ -582,11 +577,13 @@ def mark_index_entry(entry, paragraph, subentry=None):
     # instrText.text = ' XE "%s" ' % (entry)  # type: ignore
 
     if entry[0].isalnum():
-        instrText.text = f' XE "{entry}{subentry_code}" '  # type: ignore
+        instrText.text = f' XE "{entry}" '  # type: ignore
     else:
-        instrText.text = f' XE "{entry};{entry[1:]}{subentry_code}" '  # type: ignore
+        instrText.text = f' XE "{entry};{entry[1:]}" '  # type: ignore
 
     r.append(instrText)
+    if italicize:
+        run.italic = True
 
     run = paragraph.add_run()
     r = run._r

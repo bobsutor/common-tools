@@ -2,7 +2,7 @@
 
 import json
 import os
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 from common_data import DATA_FOLDER
 
@@ -77,6 +77,39 @@ with open(PRESS_RELEASES_FILE, "rt", encoding="utf8") as file:
 with open(NEWS_FILE, "rt", encoding="utf8") as file:
     news = json.load(file)
 
+# order is important in the following
+
+terms_and_types = {
+    " raises ": "financial",
+    "equity offering": "financial",
+    "private placement": "financial",
+    "funding": "financial",
+    "conference": "conference",
+    "forum": "conference",
+    "factory": "manufacturing",
+    "manufacturing": "manufacturing",
+    "roadmap": "roadmap",
+    "road map": "roadmap",
+    "cryptographic": "pqc",
+    "encryption": "pqc",
+    "qkd": "pqc",
+    "pqc": "pqc",
+    "post-quantum": "pqc",
+    "protein": "quantum-computing-applications",
+    "scheduling": "quantum-computing-applications",
+    "optimization": "quantum-computing-applications",
+    "error correction": "quantum-error-correction",
+    "error suppression": "quantum-error-correction",
+    "error mitigation": "quantum-error-correction",
+    "qiskit": "quantum-coding",
+    "cuda-q": "quantum-coding",
+    "d-wave": "quantum-annealing",
+    "nu quantum": "quantum-networking",
+    "welinq": "quantum-networking",
+    "quantum computing": "quantum-computing",
+    "qunnect": "quantum-computing",
+}
+
 for d in [press_releases, news]:
     for key, data in d.items():
         if "date" in data:
@@ -101,6 +134,18 @@ for d in [press_releases, news]:
         if is_date_later_than_today(key[0:10]):
             raise ValueError(f"Bad key contains date after today: {key}")
 
+        title = key[12:].casefold()
+
+        data["type"] = ""
+
+        if "type" not in data or not data["type"]:
+            data["type"] = ""
+
+            for term_, type_ in terms_and_types.items():
+                if term_ in title:
+                    data["type"] = type_
+                    break
+
         month_stats[int(key[5:7])] += 1
 
 press_releases = dict(sorted(press_releases.items(), reverse=True, key=lambda item: item[0].casefold()))
@@ -117,22 +162,23 @@ newsletter_items = []
 
 # print(month_stats)
 
-for press_release_key, press_release_data in press_releases.items():
-    press_release_date = press_release_key[:10]
+for d in [press_releases, news]:
+    for key, data in d.items():
+        date_ = key[:10]
 
-    if is_within_X_days(press_release_date):
-        newsletter_items.append(
-            {
-                "include": True,
-                "authors": ["X"],
-                "date": press_release_date,
-                "description": [""],
-                "link": press_release_data["link"],
-                "title": press_release_key[12:],
-                "type": "quantum-computing",
-                "commentary": [""],
-            }
-        )
+        if is_within_X_days(date_):
+            newsletter_items.append(
+                {
+                    "include": True,
+                    "authors": ["X"],
+                    "date": date_,
+                    "description": [""],
+                    "link": data["link"],
+                    "title": key[12:],
+                    "type": data["type"],
+                    "commentary": [""],
+                }
+            )
 
 
 with open(LAST_WEEKS_NEWS, "wt", encoding="utf8") as file:
