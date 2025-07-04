@@ -6,11 +6,11 @@ Formatting glossary with yattag
 # cspell:ignore vert yattag rdquo langle lsquo rsquo
 
 import json
+from datetime import date
 
 import docx_tools
 import os_tools
-
-# import yattag
+import yattag
 from common_data import SANS_SERIF_FONT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -23,6 +23,78 @@ GLOSSARY_FILE = "../../data/quantum-glossary.json"
 
 with open(GLOSSARY_FILE, "rt", encoding="utf8") as json_file:
     glossary = json.load(json_file)
+
+
+entity_substitutions = {
+    "&langle": "\u27e8",
+    "&ldquo;": "\u201c",
+    "&lsquo;": "\u2018",
+    "&rangle;": "\u232a",
+    "&rdquo;": "\u201d",
+    "&rsquo;": "\u2019",
+    "&vert;": "|",
+}
+
+glossary_intro_text = [
+    "This glossary contains common terms and definitions from the areas of quantum computing quantum networking, quantum sensing, and quantum communications. It is a work in progress.",
+    "Most of the definitions come from Perplexity and the sources are noted.",
+]
+
+
+def create_html_glossary_file(file_name):
+    source_links = {"Perplexity": "https://www.perplexity.ai/"}
+
+    doc, tag, text = yattag.Doc().tagtext()
+
+    with tag("p"):
+        today = date.today().strftime("%A, %B %d, %Y").replace(" 0", " ")
+        with tag("em"):
+            text(f"Last updated {today}.")
+
+    for line in glossary_intro_text:
+        with tag("p"):
+            doc.asis(line)
+
+    doc.stag("hr")
+
+    for term, content in glossary.items():
+        with tag("p"):
+            term_ = term
+            for entity, unicode in entity_substitutions.items():
+                term_ = term_.replace(entity, unicode)
+
+            with tag("strong"):
+                text(term_)
+        with tag("p", style="margin-left: 18pt;"):
+            definition_text = " ".join(content["definition"]).strip()
+            while "  " in definition_text:
+                definition_text = definition_text.replace("  ", " ")
+            for entity, unicode in entity_substitutions.items():
+                definition_text = definition_text.replace(entity, unicode)
+            doc.asis(definition_text)
+            with tag("em"):
+                text(" Source: ")
+            if content["source"] in source_links:
+                with tag("a", href=source_links[content["source"]], target="_blank", rel="noopener"):
+                    text(content["source"])
+            else:
+                text(content["source"])
+
+        if "dwq-reference" in content:
+            with tag("p", style="margin-left: 18pt;"):
+                text(f"Discussed in section {content['dwq-reference']} of ")
+                with tag("a", href="https://amzn.to/4eylDSZ", target="_blank", rel="noopener"):
+                    with tag("em"):
+                        text("Dancing with Qubits, Second Edition")
+                text(".")
+
+    result = yattag.indent(doc.getvalue())
+    # result = doc.getvalue()
+
+    result = result.replace("</strong>\n      <a", "</strong> <a")
+
+    with open(file_name, "wt", encoding="utf-8") as output_html_file:
+        print(result, file=output_html_file)
 
 
 def html_format_glossary_term(term, yattag_doc, yattag_tag, yattag_text):
@@ -57,16 +129,6 @@ def word_format_glossary_terms(terms, word_document):
     glossary_style.font.bold = True
     glossary_style.font.italic = False
     glossary_style.font.size = word_document.styles["Normal"].font.size
-
-    entity_substitutions = {
-        "&langle": "\u27e8",
-        "&ldquo;": "\u201c",
-        "&lsquo;": "\u2018",
-        "&rangle;": "\u232a",
-        "&rdquo;": "\u201d",
-        "&rsquo;": "\u2019",
-        "&vert;": "|",
-    }
 
     for term in terms:
         try:
@@ -173,4 +235,4 @@ Do not include matrices in mathematical form. Do not include links or references
 """
 
 if __name__ == "__main__":
-    print(json.dumps(list(glossary.keys()), indent=4))
+    create_html_glossary_file("test-html-glossary.html")

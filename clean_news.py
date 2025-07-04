@@ -77,6 +77,7 @@ with open(NEWS_FILE, "rt", encoding="utf8") as file:
 
 terms_and_types = {
     " raises ": "financial",
+    " funding ": "financial",
     "equity offering": "financial",
     "private placement": "financial",
     "funding": "financial",
@@ -151,8 +152,8 @@ for d in [press_releases, news]:
         if "authors" not in data:
             data["authors"] = ["X"]
 
-        if "include" not in data:
-            data["include"] = True
+        if "newsletter-include" not in data:
+            data["newsletter-include"] = True
 
         data = dict(sorted(data.items(), key=lambda item: item[0].casefold()))
         d[key] = data
@@ -176,14 +177,14 @@ for d in [press_releases, news]:
         if is_within_X_days(date_):
             newsletter_items.append(
                 {
-                    "include": data.get("include", True),
                     "authors": data.get("authors", ["X"]),
+                    "commentary": data.get("commentary", [""]),
                     "date": date_,
                     "description": data.get("description", [""]),
                     "link": data["link"],
+                    "newsletter-include": data.get("newsletter-include", True),
                     "title": key[12:],
                     "type": data["type"],
-                    "commentary": data.get("commentary", [""]),
                 }
             )
 
