@@ -4,11 +4,10 @@ Formatting glossary with yattag
 
 # cspell:ignore addnext Aptos klass Oxml OxmlElement Pt yattag
 
+import docx_tools
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt
-
-import docx_tools
 
 # cspell:disable
 
@@ -898,11 +897,14 @@ def write_region_html_appendix(id_, appendix_title, yattag_tag, yattag_text):
             yattag_text(", ".join(region_data["countries"]))
 
 
-def write_region_word_appendix(id_, appendix_title, word_document):
+def write_region_word_appendix(id_, appendix_title, word_document, text=None):
     # pylint: disable=W0212
     heading = word_document.add_heading(appendix_title, 1)
     run = heading.runs[0]
     docx_tools.add_bookmark_for_id(id_, run)
+
+    if text is not None:
+        docx_tools.convert_html_to_word(text, word_document)
 
     # Create a custom region style
     region_style = word_document.styles.add_style("RegionAppendix", 1)

@@ -213,6 +213,9 @@ def write_glossary_word_appendix(id_, appendix_title, word_document):
     run = heading.runs[0]
     docx_tools.add_bookmark_for_id(id_, run)
 
+    p = word_document.add_paragraph()
+    p.add_run("This appendix provides a reference for the technical terms used throughout this document.")
+
     # # Create bookmark elements
     # # pylint: disable=W0212
     # bookmark_start = OxmlElement("w:bookmarkStart")
