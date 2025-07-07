@@ -7,11 +7,13 @@ from copy import copy
 import docx
 from bs4 import BeautifulSoup
 from common_data import HARVARD_CRIMSON, SANS_SERIF_FONT
-from docx.enum.section import WD_SECTION
+from docx.enum.section import WD_SECTION, WD_SECTION_START
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
+
+# pylint: disable=W0212
 
 # -------------------------------------------------------------------------------------------------
 # Hyperlinks
@@ -21,7 +23,6 @@ from docx.shared import Inches, Pt, RGBColor
 def add_bookmark_for_id(id_, run):
     # Create bookmark elements
 
-    # pylint: disable=W0212
     bookmark_start = OxmlElement("w:bookmarkStart")
     bookmark_start.set(qn("w:id"), id_)  # Unique ID (use a different one for each bookmark)
     bookmark_start.set(qn("w:name"), id_)  # Bookmark name
@@ -32,22 +33,19 @@ def add_bookmark_for_id(id_, run):
     # Insert bookmark before and after the text
     run._r.insert(0, bookmark_start)  # Before text
     run._r.addnext(bookmark_end)  # After text
-    # pylint: enable=W0212
 
 
 def add_hyperlink(paragraph, text_, url, is_italic=False):
     # This gets access to the document.xml.rels file and gets a new relation id value
     part = paragraph.part
-    r_id = part.relate_to(url, docx.opc.constants.RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
-
-    # pylint: disable=W0212
+    r_id = part.relate_to(url, docx.opc.constants.RELATIONSHIP_TYPE.HYPERLINK, is_external=True)  # type: ignore
 
     # Create the w:hyperlink tag and add needed values
-    hyperlink = docx.oxml.shared.OxmlElement("w:hyperlink")
-    hyperlink.set(docx.oxml.shared.qn("r:id"), r_id)
+    hyperlink = docx.oxml.shared.OxmlElement("w:hyperlink")  # type: ignore
+    hyperlink.set(docx.oxml.shared.qn("r:id"), r_id)  # type: ignore
 
     # Create a new run object (a wrapper over a 'w:r' element)
-    new_run = docx.text.run.Run(docx.oxml.shared.OxmlElement("w:r"), paragraph)
+    new_run = docx.text.run.Run(docx.oxml.shared.OxmlElement("w:r"), paragraph)  # type: ignore
     new_run.text = text_
 
     # Set the run's style to the builtin hyperlink style, defining it if necessary
@@ -63,24 +61,23 @@ def add_hyperlink(paragraph, text_, url, is_italic=False):
     hyperlink.append(new_run._element)
     paragraph._p.append(hyperlink)
 
-    # pylint: disable=W0212
-
     return new_run
 
 
 def add_bookmark(paragraph, bookmark_name, bookmark_id):
-    # pylint: disable=W0212
     # Create bookmarkStart element
+
     bookmark_start = OxmlElement("w:bookmarkStart")
     bookmark_start.set(qn("w:id"), str(bookmark_id))
     bookmark_start.set(qn("w:name"), bookmark_name)
+
     # Create bookmarkEnd element
     bookmark_end = OxmlElement("w:bookmarkEnd")
+
     bookmark_end.set(qn("w:id"), str(bookmark_id))
     # Insert bookmarkStart at the beginning, bookmarkEnd at the end
     paragraph._p.insert(0, bookmark_start)
     paragraph._p.append(bookmark_end)
-    # pylint: disable=W0212
 
 
 def add_hyperlink_to_bookmark(paragraph, link_text, bookmark_name, tooltip=None, is_italic=False):
@@ -88,7 +85,6 @@ def add_hyperlink_to_bookmark(paragraph, link_text, bookmark_name, tooltip=None,
 
     get_or_create_hyperlink_style(paragraph.part.document)
 
-    # pylint: disable=W0212
     hyperlink = OxmlElement("w:hyperlink")
     hyperlink.set(qn("w:anchor"), bookmark_name)
     if tooltip is not None:
@@ -102,11 +98,10 @@ def add_hyperlink_to_bookmark(paragraph, link_text, bookmark_name, tooltip=None,
 
     new_run = OxmlElement("w:r")
     text = OxmlElement("w:t")
-    text.text = link_text
+    text.text = link_text  # type: ignore
     new_run.append(text)
     hyperlink.append(new_run)
     run._element.append(hyperlink)
-    # pylint: enable=W0212
 
     if is_italic:
         run.italic = True
@@ -122,19 +117,23 @@ def get_or_create_hyperlink_style(d_):
 
     if "Hyperlink" not in d_.styles:
         if "Default Character Font" not in d_.styles:
-            ds = d_.styles.add_style("Default Character Font", docx.enum.style.WD_STYLE_TYPE.CHARACTER, True)
-            ds.element.set(docx.oxml.shared.qn("w:default"), "1")
+            ds = d_.styles.add_style(
+                "Default Character Font",
+                docx.enum.style.WD_STYLE_TYPE.CHARACTER,  # type: ignore
+                True,
+            )
+            ds.element.set(docx.oxml.shared.qn("w:default"), "1")  # type: ignore
             ds.priority = 1
             ds.hidden = True
             ds.unhide_when_used = True
             del ds
-        hs = d_.styles.add_style("Hyperlink", docx.enum.style.WD_STYLE_TYPE.CHARACTER, True)
+        hs = d_.styles.add_style("Hyperlink", docx.enum.style.WD_STYLE_TYPE.CHARACTER, True)  # type: ignore
         hs.base_style = d_.styles["Default Character Font"]
         hs.unhide_when_used = True
 
         # hs.font.color.rgb = docx.shared.RGBColor(0x05, 0x63, 0xC1)
         # ROYAL_BLUE = "#0044B9"
-        hs.font.color.rgb = docx.shared.RGBColor(0x00, 0x44, 0xB9)
+        hs.font.color.rgb = docx.shared.RGBColor(0x00, 0x44, 0xB9)  # type: ignore
 
         hs.font.underline = True
         del hs
@@ -156,7 +155,7 @@ def remove_hyperlink_underline(doc):
         hyperlink_style.append(rPr)
 
     # Check if u element exists, remove it if it does.
-    u = rPr.find(qn("w:u"))
+    u = rPr.find(qn("w:u"))  # type: ignore
     if u is not None:
         rPr.remove(u)
 
@@ -175,20 +174,18 @@ def insert_word_toc(document):
     paragraph = document.add_paragraph()
     run = paragraph.add_run()
 
-    # pylint: disable=W0212
-
     fldChar = OxmlElement("w:fldChar")  # creates a new element
     fldChar.set(qn("w:fldCharType"), "begin")  # sets attribute on element
 
     instrText = OxmlElement("w:instrText")
     instrText.set(qn("xml:space"), "preserve")  # sets attribute on element
-    instrText.text = 'TOC \\o "1-3" \\h \\z \\u'  # change 1-3 depending on heading levels you need
+    instrText.text = 'TOC \\o "1-3" \\h \\z \\u'  # type: ignore
 
     fldChar2 = OxmlElement("w:fldChar")
     fldChar2.set(qn("w:fldCharType"), "separate")
 
     fldChar3 = OxmlElement("w:t")
-    fldChar3.text = "Right-click to update field."
+    fldChar3.text = "Right-click to update field."  # type: ignore
 
     fldChar2.append(fldChar3)
 
@@ -203,7 +200,6 @@ def insert_word_toc(document):
 
     # p_element = paragraph._p
     run.font.underline = False
-    # pylint: enable=W0212
 
 
 # -------------------------------------------------------------------------------------------------
@@ -219,18 +215,16 @@ def add_page_number(paragraph):
 
     instrText = OxmlElement("w:instrText")
     instrText.set(qn("xml:space"), "preserve")
-    instrText.text = "PAGE"
+    instrText.text = "PAGE"  # type: ignore
 
     fldChar2 = OxmlElement("w:fldChar")
     fldChar2.set(qn("w:fldCharType"), "end")
 
     run = paragraph.add_run()
 
-    # pylint: disable=W0212
     run._r.append(fldChar1)
     run._r.append(instrText)
     run._r.append(fldChar2)
-    # pylint: enable=W0212
 
 
 def set_triple_footer(section, left_text, center_text):
@@ -245,9 +239,9 @@ def set_triple_footer(section, left_text, center_text):
 
     # Access cells and add text
     cell_left = table.cell(0, 0)
-    cell_left.width = Inches(1.0)
+    cell_left.width = Inches(1.5)
     cell_center = table.cell(0, 1)
-    cell_center.width = Inches(5.0)
+    cell_center.width = Inches(4.5)
     cell_right = table.cell(0, 2)
     cell_right.width = Inches(1.0)
 
@@ -299,9 +293,7 @@ def copy_style(source_document, target_document, style_name: str):
 
 
 def set_word_table_heading_cell_colors(cell):
-    # pylint: disable=W0212
     tcPr = cell._element.get_or_add_tcPr()
-    # pylint: enable=W0212
 
     shd = OxmlElement("w:shd")
     shd.set(qn("w:fill"), HARVARD_CRIMSON)  # Red color
@@ -317,9 +309,7 @@ def set_word_table_heading_cell_colors(cell):
 
 def set_word_table_cell_colors(cell, row_index):
     if row_index % 2 == 0:  # even numbered row
-        # pylint: disable=W0212
         tcPr = cell._element.get_or_add_tcPr()
-        # pylint: enable=W0212
 
         shd = OxmlElement("w:shd")
         shd.set(qn("w:fill"), "#EEEEEE")
@@ -342,18 +332,19 @@ def insert_page_break(word_document):
 # -------------------------------------------------------------------------------------------------
 
 
-def insert_section_break(word_document):
+def insert_section_break(word_document, odd_page=False):
     assert word_document is not None
 
-    return word_document.add_section(WD_SECTION.NEW_PAGE)
+    if odd_page:
+        return word_document.add_section(WD_SECTION_START.ODD_PAGE)
+    else:
+        return word_document.add_section(WD_SECTION.NEW_PAGE)
 
 
 def insert_two_column_section(word_document):
     assert word_document is not None
 
     section = word_document.add_section(WD_SECTION.CONTINUOUS)
-
-    # pylint: disable=W0212
 
     sectPr = section._sectPr  # Access the section's XML
 
@@ -368,15 +359,12 @@ def insert_two_column_section(word_document):
     # Set the number of columns and spacing
     cols.set(qn("w:num"), "2")
     cols.set(qn("w:space"), "500")  # Space between columns (in twentieths of a point)
-    # pylint: enable=W0212
 
 
 def insert_one_column_section(word_document):
     assert word_document is not None
 
     section = word_document.add_section(WD_SECTION.CONTINUOUS)
-
-    # pylint: disable=W0212
 
     sectPr = section._sectPr  # Access the section's XML
 
@@ -390,7 +378,6 @@ def insert_one_column_section(word_document):
 
     # Set the number of columns and spacing
     cols.set(qn("w:num"), "1")
-    # pylint: enable=W0212
 
 
 # -------------------------------------------------------------------------------------------------
@@ -531,7 +518,7 @@ def convert_html_to_word(html_string, word_document):
                     walk_html(child, p_)
 
             elif isinstance(child, str) and child.strip():
-                the_text = child.string
+                the_text = child.string  # type: ignore
                 if p_ is None:
                     p_ = word_document.add_paragraph()
                     new_paragraph = True
@@ -607,8 +594,6 @@ def insert_word_index(document):
     paragraph = document.add_paragraph()
     run = paragraph.add_run()
 
-    # pylint: disable=W0212
-
     fldChar = OxmlElement("w:fldChar")  # creates a new element
     fldChar.set(qn("w:fldCharType"), "begin")  # sets attribute on element
 
@@ -635,14 +620,31 @@ def insert_word_index(document):
 
     # p_element = paragraph._p
     run.font.underline = False
-    # pylint: enable=W0212
 
 
 def insert_index(document):
-    insert_section_break(document)
+    insert_section_break(document, odd_page=True)
 
     heading = document.add_heading("Index", 1)
     run = heading.runs[0]
     add_bookmark_for_id("section-index", run)
 
     insert_word_index(document)
+
+
+def insert_horizontal_rule(document):
+    paragraph = document.add_paragraph()
+    # paragraph = document.paragraphs[-1]
+    p = paragraph._p
+    pPr = p.get_or_add_pPr()
+    pBdr = OxmlElement("w:pBdr")
+    rule_position = OxmlElement("w:top")
+    rule_position.set(qn("w:val"), "single")
+    rule_position.set(qn("w:sz"), "6")
+    rule_position.set(qn("w:space"), "1")
+    rule_position.set(qn("w:color"), HARVARD_CRIMSON)
+    pBdr.append(rule_position)
+    pPr.append(pBdr)
+
+
+# pylint: enable=W0212

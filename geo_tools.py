@@ -906,6 +906,8 @@ def write_region_word_appendix(id_, appendix_title, word_document, text=None):
     if text is not None:
         docx_tools.convert_html_to_word(text, word_document)
 
+    docx_tools.insert_horizontal_rule(word_document)
+
     # Create a custom region style
     region_style = word_document.styles.add_style("RegionAppendix", 1)
     region_style.font.name = "Aptos"

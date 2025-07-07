@@ -16,6 +16,7 @@ REPORT_DATE = date.today()
 
 TODAY = REPORT_DATE.strftime("%B %d, %Y").replace(" 0", " ")
 TODAY_YY_MM_DD = REPORT_DATE.strftime("%Y-%m-%d")
+TODAY_YYMMDD = REPORT_DATE.strftime("%Y%m%d")
 THIS_YEAR = REPORT_DATE.strftime("%Y")
 
 # -------------------------------------------------------------------------------------------------
