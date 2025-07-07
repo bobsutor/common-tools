@@ -426,7 +426,10 @@ def convert_html_to_word(html_string, word_document):
                     walk_html(child, p_)
 
                 elif child.name == "br":
-                    run = p_.runs[-1]
+                    if p_.runs:
+                        run = p_.runs[-1]
+                    else:
+                        run = p_.add_run()
                     run.add_break(WD_BREAK.LINE)
 
                 elif child.name == "p":
