@@ -459,14 +459,20 @@ def convert_html_to_word(html_string, word_document):
                 elif child.name == "h2":
                     new_paragraph = True
                     p_ = word_document.add_heading(child.string, level=1)
+                    if "id" in child.attrs:
+                        add_bookmark_for_id(child["id"], p_.runs[0])
 
                 elif child.name == "h3":
                     new_paragraph = True
                     p_ = word_document.add_heading(child.string, level=2)
+                    if "id" in child.attrs:
+                        add_bookmark_for_id(child["id"], p_.runs[0])
 
                 elif child.name == "h4":
                     new_paragraph = True
                     p_ = word_document.add_heading(child.string, level=3)
+                    if "id" in child.attrs:
+                        add_bookmark_for_id(child["id"], p_.runs[0])
 
                 elif child.name == "a":
                     new_paragraph = False
