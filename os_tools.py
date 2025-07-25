@@ -139,6 +139,10 @@ def information(msg: str, indent=0) -> None:
     print(f"{indent * ' '}{fg.li_green}{msg}{fg.rs}")
 
 
+def information_plain(msg: str, indent=0) -> None:
+    print(f"{indent * ' '}{msg}")
+
+
 def warning(msg: str, indent=0) -> None:
     print(f"{indent * ' '}{fg.li_yellow}{msg}{fg.rs}")
 
