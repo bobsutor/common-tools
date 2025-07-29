@@ -1,11 +1,13 @@
 # cspell:ignore asis Crunchbase ndash tagtext yattag
 
 import json
-from datetime import date, datetime
+from datetime import date
+from datetime import datetime
 
 import os_tools
 import yattag
-from common_data import COMPANY_DATA_FOLDER, DATA_FOLDER
+from common_data import DATA_FOLDER
+from common_data import ORGANIZATION_DATA_FOLDER
 
 TODAY_YY_MM_DD = date.today().strftime("%Y-%m-%d")
 
@@ -56,7 +58,7 @@ def is_within_last_year(reference_date_str: str, target_date_str: str) -> bool:
 def build_company_profile(company_name: str, heading_level: str = "h3", indent_sections=True) -> str:
     # os.system("cls")
 
-    input_json = f"{COMPANY_DATA_FOLDER}{company_name}.json"
+    input_json = f"{ORGANIZATION_DATA_FOLDER}{company_name}.json"
 
     company_data = dict()
     name = ""
@@ -253,13 +255,7 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
 
     for news_key, news_data in news.items():
         if name in news_data["companies"]:
-            company_news.append(
-                {
-                    "date": news_key[:10],
-                    "title": news_key[12:],
-                    "link": news_data["link"],
-                }
-            )
+            company_news.append({"date": news_key[:10], "title": news_key[12:], "link": news_data["link"]})
 
     if company_news:
         filtered_announcements = []

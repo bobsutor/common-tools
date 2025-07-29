@@ -102,19 +102,20 @@ def start_timer():
     time_stack.append(datetime.now())
 
 
-def end_timer():
+def end_timer(decimal_places=1):
     elapsed_time = datetime.now() - time_stack.pop()
-    return elapsed_time.total_seconds()
+    return round(elapsed_time.total_seconds(), decimal_places)
 
 
-def format_iso_date(date: str, include_day_of_week=False) -> str:
+def format_iso_date(date_: str, include_day_of_week_=False) -> str:
     try:
-        if include_day_of_week:
-            return datetime.fromisoformat(date).strftime("%A, %B %d, %Y").replace(" 0", " ")
+        if include_day_of_week_:
+            return datetime.fromisoformat(date_).strftime("%A, %B %d, %Y").replace(" 0", " ")
         else:
-            return datetime.fromisoformat(date).strftime("%B %d, %Y").replace(" 0", " ")
+            return datetime.fromisoformat(date_).strftime("%B %d, %Y").replace(" 0", " ")
+
     except ValueError as exc:
-        raise ValueError(f"Problem with date: {date}") from exc
+        raise ValueError(f"Problem with date: {date_}") from exc
 
     return "WHOOPS"
 

@@ -65,7 +65,8 @@ OUR_COMPANY = "Sutor Group Intelligence and Advisory"
 COPYRIGHT = f"Copyright © 2025 {OUR_COMPANY}"
 
 DATA_FOLDER = "../../data/"
-COMPANY_DATA_FOLDER = "../../data/company-data/"
+ORGANIZATION_DATA_FOLDER = "../../data/organization-data/"
+ORGANIZATION_LOGOS_FOLDER = "../../data/organization-logos/"
 
 YAHOO_PREFIX = "https://finance.yahoo.com/quote"
 
