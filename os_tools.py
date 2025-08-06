@@ -48,7 +48,7 @@ def delete_file_if_present(_file: str) -> None:
 
 def is_within_X_days(date_string, X_days=8):
     """
-    Check if a YYYY-MM-DD date string is within X_days days of today.
+    Check if a YYYY-MM-DD date string is within X_days days before today.
 
     Args:
         date_string (str): Date in YYYY-MM-DD format
@@ -64,7 +64,12 @@ def is_within_X_days(date_string, X_days=8):
         today = datetime.now().date()
 
         # Calculate the absolute difference in days
-        days_diff = abs((input_date - today).days)
+        # days_diff = abs((input_date - today).days)
+        days_diff = (today - input_date).days
+
+        if days_diff < 0:
+            # newer than today
+            return False
 
         # Return True if within X_days days
         return days_diff <= X_days

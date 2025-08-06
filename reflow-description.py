@@ -1,4 +1,4 @@
-# cspell:ignore rangle
+# cspell:ignore rangle rdquo ldquo
 
 import io
 
@@ -23,9 +23,15 @@ if text.endswith('"'):
     text = text[:-1]
 
 text = text.replace('",', " ")
-text = text.replace(' "', " ")
 text = text.replace("\r", " ")
 text = text.replace("\n", " ")
+
+while '"' in text:
+    text = text.replace('"', "&ldquo;", 1)
+    text = text.replace('"', "&rdquo;", 1)
+
+# text = text.replace(' "', " ")
+# text = text.replace('"', "")
 
 if USE_ENTITIES:
     text = text.replace("|", "&vert;")
