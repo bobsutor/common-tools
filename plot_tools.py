@@ -11,14 +11,11 @@
 import math
 import os
 
-import plotly.graph_objects as go  # type: ignore
-import plotly.io as pio  # type: ignore
-from PIL import Image
-from sty import fg  # type: ignore
-
-import docx_tools
+# import docx_tools
 import geo_tools
 import os_tools
+import plotly.graph_objects as go  # type: ignore
+import plotly.io as pio  # type: ignore
 from common_data import (
     BANANA_YELLOW,
     CHART_HEIGHT,
@@ -33,9 +30,13 @@ from common_data import (
     SUTOR_GROUP_LOGO_PATH,
     USE_PLEX,
 )
+from PIL import Image
+from sty import fg  # type: ignore
 
 # import time
 
+
+pio.defaults.default_format = "png"
 
 BACKGROUND_COLOR = "white"
 # BACKGROUND_COLOR = "rgba(0,0,0,0)"  # transparent
@@ -269,8 +270,8 @@ def companies_in_countries_chart(
 
     fig.update_layout(yaxis=dict(range=[0, y_max_with_rounder(rounder, max_ys)]))
 
-    # fig.write_image(chart_file, format="png", engine="kaleido")
-    pio.write_image(fig, chart_file)
+    fig.write_image(chart_file, format="png", engine="kaleido")
+    # pio.write_image(fig, chart_file)
     if not os.path.exists(chart_file):
         os_tools.terminating_error(f"Chart file '{chart_file}' was not created.")
 
@@ -323,8 +324,8 @@ def companies_in_country_region_chart(
         )
     )
 
-    # fig.write_image(chart_file, format="png", engine="kaleido")
-    pio.write_image(fig, chart_file)
+    fig.write_image(chart_file, format="png", engine="kaleido")
+    # pio.write_image(fig, chart_file)
 
     print(f"{os_tools.end_timer()} seconds")
 
@@ -390,8 +391,8 @@ def companies_in_regions_chart(
         ]
     )
 
-    # fig.write_image(chart_file, format="png", engine="kaleido")
-    pio.write_image(fig, chart_file)
+    fig.write_image(chart_file, format="png", engine="kaleido")
+    # pio.write_image(fig, chart_file)
 
     print(f"{os_tools.end_timer()} seconds")
 
@@ -424,11 +425,9 @@ def years_founded_chart(xs, ys, figure_count, title, title_x, title_y, total_com
 
     fig.update_layout(yaxis=dict(range=[0, y_max_with_rounder(rounder, max_ys)]))
 
-    # fig.write_image(chart_file, format="png", engine="kaleido")
-    pio.write_image(fig, chart_file)
+    fig.write_image(chart_file, format="png", engine="kaleido")
+    # pio.write_image(fig, chart_file)
 
     print(f"{os_tools.end_timer()} seconds")
-
-    return fig
 
     return fig
