@@ -8,3 +8,5 @@ os.system("git gc")
 os.system("git add -A")
 os.system("git commit")
 os.system("git push -u origin main")
+
+os.system("python -OO -m compileall .")
