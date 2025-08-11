@@ -1,23 +1,20 @@
 # cspell:ignore asis Crunchbase ndash tagtext yattag noopener
 
 import json
-from datetime import date, datetime
-
-import yattag
+from datetime import date
+from datetime import datetime
 
 import os_tools
-from common_data import DATA_FOLDER, ORGANIZATION_DATA_FOLDER
+import yattag
+from common_data import DATA_FOLDER
+from common_data import ORGANIZATION_DATA_FOLDER
 
 TODAY_YY_MM_DD = date.today().strftime("%Y-%m-%d")
 
-PRESS_RELEASES_FILE = "press-releases-and-blogs.json"
-NEWS_FILE = "news-and-other-announcements.json"
+ARCHIVED_NEWS_FILE = "news_archive.json"
 
-with open(f"{DATA_FOLDER}/{PRESS_RELEASES_FILE}", "rt", encoding="utf8") as file:
+with open(f"{DATA_FOLDER}/{ARCHIVED_NEWS_FILE}", "rt", encoding="utf8") as file:
     press_releases = json.load(file)
-
-with open(f"{DATA_FOLDER}/{NEWS_FILE}", "rt", encoding="utf8") as file:
-    news = json.load(file)
 
 
 def is_within_last_year(reference_date_str: str, target_date_str: str) -> bool:
@@ -248,7 +245,7 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
 
     # Show recent press releases and blog posts if there are any
 
-    company_press_releases = []  # type: ignore
+    company_news_items = []  # type: ignore
     other_earnings_briefs = []  # type: ignore
 
     for press_release_key, press_release_data in press_releases.items():
@@ -257,27 +254,15 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
 
             if the_title.startswith("Sutor Group Earnings Brief:"):
                 other_earnings_briefs.append(
-                    {
-                        "date": press_release_key[:10],
-                        "title": the_title,
-                        "link": press_release_data["link"],
-                    }
+                    {"date": press_release_key[:10], "title": the_title, "link": press_release_data["link"]}
                 )
             elif the_title.startswith("The Futurum Group"):
                 other_earnings_briefs.append(
-                    {
-                        "date": press_release_key[:10],
-                        "title": the_title,
-                        "link": press_release_data["link"],
-                    }
+                    {"date": press_release_key[:10], "title": the_title, "link": press_release_data["link"]}
                 )
             else:
-                company_press_releases.append(
-                    {
-                        "date": press_release_key[:10],
-                        "title": the_title,
-                        "link": press_release_data["link"],
-                    }
+                company_news_items.append(
+                    {"date": press_release_key[:10], "title": the_title, "link": press_release_data["link"]}
                 )
 
     if other_earnings_briefs:
@@ -305,9 +290,9 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
                         with tag("a", href=announcement["link"], target="_blank", rel="noopener"):
                             text(announcement["title"])
 
-    if company_press_releases:
+    if company_news_items:
         filtered_announcements = []
-        for announcement in company_press_releases:
+        for announcement in company_news_items:
             if announcement["date"] and not is_within_last_year(TODAY_YY_MM_DD, announcement["date"]):
                 continue
 
@@ -318,7 +303,7 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
 
         if filtered_announcements:
             with tag(heading_level):
-                text("Selected Recent Press Releases and Blog Posts")
+                text("Selected Recent Press Releases, Announcements, News, and Blog Posts")
 
             with tag("ul"):
                 for announcement in filtered_announcements:
@@ -329,40 +314,6 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
 
                         with tag("a", href=announcement["link"], target="_blank", rel="noopener"):
                             text(announcement["title"])
-
-    if False:
-        company_news = []  # type: ignore
-
-        for news_key, news_data in news.items():
-            if name in news_data["companies"]:
-                company_news.append(
-                    {"date": news_key[:10], "title": news_key[12:], "link": news_data["link"]}
-                )
-
-        if company_news:
-            filtered_announcements = []
-            for announcement in company_news:
-                if announcement["date"] and not is_within_last_year(TODAY_YY_MM_DD, announcement["date"]):
-                    continue
-
-                if not announcement["link"]:
-                    continue
-
-                filtered_announcements.append(announcement)
-
-            if filtered_announcements:
-                with tag(heading_level):
-                    text("Selected Recent News and Analysis")
-
-                with tag("ul"):
-                    for announcement in filtered_announcements:
-                        with tag("li"):
-                            if announcement["date"]:
-                                text(os_tools.format_iso_date(announcement["date"]))
-                                doc.asis(" &ndash; ")
-
-                            with tag("a", href=announcement["link"], target="_blank", rel="noopener"):
-                                text(announcement["title"])
 
     result = yattag.indent(doc.getvalue())
     # result = doc.getvalue()
