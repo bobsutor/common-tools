@@ -1,19 +1,17 @@
 # cspell:ignore asis Crunchbase ndash tagtext yattag noopener
 
 import json
-from datetime import date
-from datetime import datetime
+from datetime import date, datetime
 
 import os_tools
 import yattag
-from common_data import DATA_FOLDER
-from common_data import ORGANIZATION_DATA_FOLDER
+from common_data import DATA_FOLDER, ORGANIZATION_DATA_FOLDER
 
 TODAY_YY_MM_DD = date.today().strftime("%Y-%m-%d")
 
-ARCHIVED_NEWS_FILE = "news_archive.json"
+NEWS_ARCHIVE_FILE = "news-archive.json"
 
-with open(f"{DATA_FOLDER}/{ARCHIVED_NEWS_FILE}", "rt", encoding="utf8") as file:
+with open(f"{DATA_FOLDER}/{NEWS_ARCHIVE_FILE}", "rt", encoding="utf8") as file:
     press_releases = json.load(file)
 
 
