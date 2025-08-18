@@ -11,6 +11,8 @@ TODAY_YY_MM_DD = date.today().strftime("%Y-%m-%d")
 
 NEWS_ARCHIVE_FILE = "news-archive.json"
 
+MAX_NEWS_ITEMS = 30
+
 with open(f"{DATA_FOLDER}/{NEWS_ARCHIVE_FILE}", "rt", encoding="utf8") as file:
     press_releases = json.load(file)
 
@@ -181,9 +183,9 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
                                 with tag(
                                     "a", href=person["links"]["primary"], target="_blank", rel="noopener"
                                 ):
-                                    doc.stag("img", src=person["links"]["image"], style="width: 5em;")
+                                    doc.stag("img", src=person["links"]["image"].strip(), style="width: 5em;")
                             else:
-                                doc.stag("img", src=person["links"]["image"], style="width: 5em;")
+                                doc.stag("img", src=person["links"]["image"].strip(), style="width: 5em;")
                         else:
                             doc.asis("&nbsp;")
                     with tag("td", style="width: 42.5%;"):
@@ -289,6 +291,8 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
                             text(announcement["title"])
 
     if company_news_items:
+        news_item_count = 0
+
         filtered_announcements = []
         for announcement in company_news_items:
             if announcement["date"] and not is_within_last_year(TODAY_YY_MM_DD, announcement["date"]):
@@ -296,6 +300,10 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
 
             if not announcement["link"]:
                 continue
+
+            news_item_count += 1
+            if news_item_count > MAX_NEWS_ITEMS:
+                break
 
             filtered_announcements.append(announcement)
 

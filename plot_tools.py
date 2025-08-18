@@ -270,8 +270,13 @@ def companies_in_countries_chart(
 
     fig.update_layout(yaxis=dict(range=[0, y_max_with_rounder(rounder, max_ys)]))
 
-    fig.write_image(chart_file, format="png", engine="kaleido")
-    # pio.write_image(fig, chart_file)
+    fig.write_image(
+        chart_file,
+        format="png",
+        width=CHART_WIDTH,
+        height=CHART_HEIGHT,
+    )
+
     if not os.path.exists(chart_file):
         os_tools.terminating_error(f"Chart file '{chart_file}' was not created.")
 
@@ -324,8 +329,12 @@ def companies_in_country_region_chart(
         )
     )
 
-    fig.write_image(chart_file, format="png", engine="kaleido")
-    # pio.write_image(fig, chart_file)
+    fig.write_image(
+        chart_file,
+        format="png",
+        width=CHART_WIDTH,
+        height=CHART_HEIGHT,
+    )
 
     print(f"{os_tools.end_timer()} seconds")
 
@@ -391,8 +400,12 @@ def companies_in_regions_chart(
         ]
     )
 
-    fig.write_image(chart_file, format="png", engine="kaleido")
-    # pio.write_image(fig, chart_file)
+    fig.write_image(
+        chart_file,
+        format="png",
+        width=CHART_WIDTH,
+        height=CHART_HEIGHT,
+    )
 
     print(f"{os_tools.end_timer()} seconds")
 
@@ -425,8 +438,12 @@ def years_founded_chart(xs, ys, figure_count, title, title_x, title_y, total_com
 
     fig.update_layout(yaxis=dict(range=[0, y_max_with_rounder(rounder, max_ys)]))
 
-    fig.write_image(chart_file, format="png", engine="kaleido")
-    # pio.write_image(fig, chart_file)
+    fig.write_image(
+        chart_file,
+        format="png",
+        width=CHART_WIDTH,
+        height=CHART_HEIGHT,
+    )
 
     print(f"{os_tools.end_timer()} seconds")
 
