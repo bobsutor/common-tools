@@ -183,9 +183,17 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
                                 with tag(
                                     "a", href=person["links"]["primary"], target="_blank", rel="noopener"
                                 ):
-                                    doc.stag("img", src=person["links"]["image"].strip(), style="width: 5em;")
+                                    doc.stag(
+                                        "img",
+                                        src=person["links"]["image"].strip(),
+                                        style="width: 5em; border-radius: 50%;",
+                                    )
                             else:
-                                doc.stag("img", src=person["links"]["image"].strip(), style="width: 5em;")
+                                doc.stag(
+                                    "img",
+                                    src=person["links"]["image"].strip(),
+                                    style="width: 5em; border-radius: 50%;",
+                                )
                         else:
                             doc.asis("&nbsp;")
                     with tag("td", style="width: 42.5%;"):
@@ -249,6 +257,12 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
     other_earnings_briefs = []  # type: ignore
 
     for press_release_key, press_release_data in press_releases.items():
+        if (
+            "include-in-daily-links" in press_release_data
+            and not press_release_data["include-in-daily-links"]
+        ):
+            continue
+
         if name in press_release_data["companies"]:
             the_title = press_release_key[12:]
 
