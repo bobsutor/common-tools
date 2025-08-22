@@ -187,9 +187,7 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
             figure.update_layout(title={"text": title, "x": 0.5, "automargin": False, "font": font_spec})
             figure.update_layout(
                 title=dict(
-                    subtitle=dict(
-                        text=f"Total Number of Distinct Companies = {total_companies}", font=font_spec
-                    )
+                    subtitle=dict(text=f"Total Number of Distinct Companies = {total_companies}", font=font_spec)
                 )
             )
         else:
@@ -230,21 +228,19 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
                 source=LOGO,
                 xref="paper",
                 yref="paper",
-                x=0.5,
-                y=0.5,
+                x=0.05,
+                y=0.9,
                 sizex=STRETCH,
                 sizey=STRETCH,
                 opacity=1.0,
                 xanchor="center",
-                yanchor="center",
+                yanchor="middle",
                 layer="below",
             )
         )
 
 
-def companies_in_countries_chart(
-    xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file
-):
+def companies_in_countries_chart(xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file):
     print("Building companies in countries chart: ", end="")
     os_tools.start_timer()
 
@@ -341,9 +337,7 @@ def companies_in_country_region_chart(
     return fig
 
 
-def companies_in_regions_chart(
-    xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file
-):
+def companies_in_regions_chart(xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file):
     print("Building companies in regions chart: ", end="")
     os_tools.start_timer()
 
