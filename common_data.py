@@ -36,8 +36,8 @@ if REPORT_MODE:
 else:
     CHART_PORTRAIT_MODE = False
     BIG_LANDSCAPE = True
-    # SHOW_CHART_LOGOS = True
-    SHOW_CHART_LOGOS = False
+    SHOW_CHART_LOGOS = True
+    # SHOW_CHART_LOGOS = False
     SHOW_FIGURE_NUMBERS = False
     SHOW_SUTOR_GROUP_COPYRIGHT = False
     SHOW_TITLE = True
