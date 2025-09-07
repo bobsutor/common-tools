@@ -142,17 +142,17 @@ def kill_word() -> None:
 
 
 def information(msg: str, indent=0) -> None:
-    print(f"{indent * ' '}{fg.li_green}{msg}{fg.rs}")
+    print(f"{indent * ' '}{fg.li_green}{msg}{fg.rs}", flush=True)
 
 
 def information_plain(msg: str, indent=0) -> None:
-    print(f"{indent * ' '}{msg}")
+    print(f"{indent * ' '}{msg}", flush=True)
 
 
 def warning(msg: str, indent=0) -> None:
-    print(f"{indent * ' '}{fg.li_yellow}{msg}{fg.rs}")
+    print(f"{indent * ' '}{fg.li_yellow}{msg}{fg.rs}", flush=True)
 
 
 def terminating_error(msg: str, indent=0) -> None:
-    print(f"{indent * ' '}{fg.red}{msg}{fg.rs}")
+    print(f"{indent * ' '}{fg.red}{msg}{fg.rs}", flush=True)
     sys.exit(1)
