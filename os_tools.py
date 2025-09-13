@@ -156,3 +156,61 @@ def warning(msg: str, indent=0) -> None:
 def terminating_error(msg: str, indent=0) -> None:
     print(f"{indent * ' '}{fg.red}{msg}{fg.rs}", flush=True)
     sys.exit(1)
+
+
+def reflow_text_list(text_list: list[str], line_length=100) -> list[str]:
+    if isinstance(text_list, str):
+        text_list = [text_list]
+
+    if not text_list:
+        return [""]
+
+    if not text_list[0]:
+        return text_list
+
+    text = " ".join(text_list).strip()
+
+    if text[-1] not in [".", "!", "?", ">"]:
+        text += "."
+
+    text = text.replace("<p> ", "<p>")
+    text = text.replace("</p> ", "</p>")
+    text = text.replace(" <p>", "<p>")
+    text = text.replace(" </p>", "</p>")
+
+    text = text.replace("|", "&vert;")
+    text = text.replace("⟩", "&rangle;")
+    text = text.replace("π", "&pi;")
+    text = text.replace("θ", "&theta;")
+    text = text.replace("φ", "&phi;")
+
+    while "  " in text:
+        text = text.replace("  ", " ")
+
+    new_text_list: list[str] = []
+
+    working_line_length = line_length
+
+    while len(text) > working_line_length:
+        # try to find a blank
+
+        position = text.rfind(" ", 0, working_line_length)
+        new_text = ""
+
+        if position != -1:
+            new_text = text[:position].strip()
+            text = text[position:].strip()
+        else:
+            # keep making the working line length larger until we can find a blank
+
+            working_line_length += 10
+            continue
+
+        new_text_list.append(new_text)
+        working_line_length = line_length
+
+    text = text.strip()
+    if text:
+        new_text_list.append(text)
+
+    return new_text_list
