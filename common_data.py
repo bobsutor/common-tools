@@ -24,24 +24,37 @@ THIS_YEAR = REPORT_DATE.strftime("%Y")
 # -------------------------------------------------------------------------------------------------
 
 USE_PLEX = True
+
 REPORT_MODE = True
+SUBSTACK_MODE = False
+
 
 if REPORT_MODE:
-    CHART_PORTRAIT_MODE = True
     BIG_LANDSCAPE = False
+    CHART_PORTRAIT_MODE = True
     SHOW_CHART_LOGOS = False
+    SHOW_DATE = False
     SHOW_FIGURE_NUMBERS = True
     SHOW_SUTOR_GROUP_COPYRIGHT = False
     SHOW_TITLE = False
-else:
-    CHART_PORTRAIT_MODE = False
+
+elif SUBSTACK_MODE:
     BIG_LANDSCAPE = True
+    CHART_PORTRAIT_MODE = False
     SHOW_CHART_LOGOS = True
-    # SHOW_CHART_LOGOS = False
+    SHOW_DATE = True
+    SHOW_FIGURE_NUMBERS = False
+    SHOW_SUTOR_GROUP_COPYRIGHT = True
+    SHOW_TITLE = True
+
+else:
+    BIG_LANDSCAPE = True
+    CHART_PORTRAIT_MODE = False
+    SHOW_CHART_LOGOS = True
+    SHOW_DATE = False
     SHOW_FIGURE_NUMBERS = False
     SHOW_SUTOR_GROUP_COPYRIGHT = False
     SHOW_TITLE = True
-    # SHOW_TITLE = False
 
 BIG_LANDSCAPE_CHART_WIDTH = 2500
 BIG_LANDSCAPE_CHART_HEIGHT = 1406

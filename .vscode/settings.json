@@ -1,0 +1,7 @@
+{
+    "isort.args": [
+        "--force-single-line",
+        "--profile",
+        "black"
+    ],
+}

@@ -11,27 +11,28 @@
 import math
 import os
 
+import plotly.graph_objects as go  # type: ignore
+import plotly.io as pio  # type: ignore
+from PIL import Image
+from sty import fg  # type: ignore
+
 # import docx_tools
 import geo_tools
 import os_tools
-import plotly.graph_objects as go  # type: ignore
-import plotly.io as pio  # type: ignore
-from common_data import (
-    BANANA_YELLOW,
-    CHART_HEIGHT,
-    CHART_WIDTH,
-    COPYRIGHT,
-    HARVARD_CRIMSON,
-    ROYAL_BLUE,
-    SHOW_CHART_LOGOS,
-    SHOW_FIGURE_NUMBERS,
-    SHOW_SUTOR_GROUP_COPYRIGHT,
-    SHOW_TITLE,
-    SUTOR_GROUP_LOGO_PATH,
-    USE_PLEX,
-)
-from PIL import Image
-from sty import fg  # type: ignore
+from common_data import BANANA_YELLOW
+from common_data import CHART_HEIGHT
+from common_data import CHART_WIDTH
+from common_data import COPYRIGHT
+from common_data import HARVARD_CRIMSON
+from common_data import ROYAL_BLUE
+from common_data import SHOW_CHART_LOGOS
+from common_data import SHOW_DATE
+from common_data import SHOW_FIGURE_NUMBERS
+from common_data import SHOW_SUTOR_GROUP_COPYRIGHT
+from common_data import SHOW_TITLE
+from common_data import SUTOR_GROUP_LOGO_PATH
+from common_data import TODAY
+from common_data import USE_PLEX
 
 # import time
 
@@ -154,7 +155,7 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
     font_spec["weight"] = "bold"
     font_spec["color"] = "black"
 
-    copyright_style = "font-size: 22pt; font-weight: normal; font-style: italic;"
+    copyright_style = "font-size: 24pt; font-weight: normal; font-style: italic;"
 
     if SHOW_FIGURE_NUMBERS:
         if SHOW_SUTOR_GROUP_COPYRIGHT:
@@ -170,8 +171,13 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
             )
 
     elif SHOW_SUTOR_GROUP_COPYRIGHT:
+        if SHOW_DATE:
+            copyright_text = f"{TODAY} – {COPYRIGHT}"
+        else:
+            copyright_text = COPYRIGHT
+
         figure.update_layout(
-            xaxis_title=f"{title_x}<br><br><span style='{copyright_style}'>{COPYRIGHT}</span>",
+            xaxis_title=f"{title_x}<br><br><span style='{copyright_style}'>{copyright_text}</span>",
             xaxis_title_font=dict(weight="bold", size=36),
         )
     else:
@@ -319,11 +325,7 @@ def companies_in_country_region_chart(
 
     fig.update_layout(yaxis=dict(range=[0, y_max_with_rounder(rounder, max_ys)]))
 
-    fig.update_layout(
-        yaxis=dict(
-            dtick=1  # Show a tick for every integer
-        )
-    )
+    fig.update_layout(yaxis=dict(dtick=1))  # Show a tick for every integer
 
     fig.write_image(
         chart_file,
