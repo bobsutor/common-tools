@@ -19,6 +19,8 @@ TODAY_YY_MM_DD = REPORT_DATE.strftime("%Y-%m-%d")
 TODAY_YYMMDD = REPORT_DATE.strftime("%Y%m%d")
 THIS_YEAR = REPORT_DATE.strftime("%Y")
 
+TODAY_RANDOM_SEED = int(4 * date.today().strftime("%Y%m%d"))
+
 # -------------------------------------------------------------------------------------------------
 # Global options
 # -------------------------------------------------------------------------------------------------

@@ -152,7 +152,7 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
             rel="noopener",
             title="See location on Google Maps",
         ):
-            text(company_data["hq-address"]["long"])
+            text(company_data["address"]["long"])
 
     with tag(heading_level):
         text("Company Description")
