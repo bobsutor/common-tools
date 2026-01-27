@@ -3,18 +3,19 @@ Formatting glossary with yattag
 """
 
 # cspell:ignore addnext asis klass oxml OxmlElement qn rangle tagtext
-# cspell:ignore vert yattag rdquo langle lsquo rsquo
+# cspell:ignore vert yattag rdquo langle lsquo rsquo noopener Qubits
 
 import json
 from datetime import date
 
-import docx_tools
-import os_tools
 import yattag
-from common_data import SANS_SERIF_FONT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt
+
+import docx_tools
+import os_tools
+from common_data import SANS_SERIF_FONT
 
 # import sys
 
@@ -98,6 +99,8 @@ def create_html_glossary_file(file_name):
 
 
 def html_format_glossary_term(term, yattag_doc, yattag_tag, yattag_text):
+    term_data = dict()
+
     try:
         term_data = glossary[term]
     except KeyError as exc:
@@ -131,6 +134,8 @@ def word_format_glossary_terms(terms, word_document):
     glossary_style.font.size = word_document.styles["Normal"].font.size
 
     for term in terms:
+        term_data = dict()
+
         try:
             term_data = glossary[term]
         except KeyError as exc:
@@ -139,8 +144,10 @@ def word_format_glossary_terms(terms, word_document):
         term_id = get_glossary_id(term)
 
         term_text = term
+
         for entity, new_expression in entity_substitutions.items():
             term_text = term_text.replace(entity, new_expression)
+
         if "&" in term_text:
             print(f"Warning: '&' in glossary term '{term_text}'")
 
@@ -151,7 +158,10 @@ def word_format_glossary_terms(terms, word_document):
         elif term_text.endswith(" paradigm"):
             docx_tools.mark_index_entry("paradigm:" + term_text.replace(" paradigm", ""), p)
 
-        docx_tools.mark_index_entry(term_text, p)
+        if "index-prefix" in term_data and term_data["index-prefix"]:
+            docx_tools.mark_index_entry(term_data["index-prefix"] + ":" + term_text, p)
+        else:
+            docx_tools.mark_index_entry(term_text, p)
 
         p.paragraph_format.space_after = Pt(0)
         p.paragraph_format.keep_with_next = True

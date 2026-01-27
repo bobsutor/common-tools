@@ -1,12 +1,13 @@
 # general purpose tools
 
-# cspell:ignore autofit oxml powerpnt rels taskkill twips winword
+# cspell:ignore autofit oxml powerpnt rels taskkill twips winword rangle
 
 import os
 import shutil
 import sys
 import time
-from datetime import date, datetime
+from datetime import date
+from datetime import datetime
 
 from sty import fg  # type: ignore
 
@@ -173,6 +174,9 @@ def reflow_text_list(text_list: list[str], line_length=100) -> list[str]:
     if text[-1] not in [".", "!", "?", ">"]:
         text += "."
 
+    text = text.replace("<br>", " ")
+    text = text.replace("<br/>", " ")
+    text = text.replace("<br />", " ")
     text = text.replace("<p> ", "<p>")
     text = text.replace("</p> ", "</p>")
     text = text.replace(" <p>", "<p>")

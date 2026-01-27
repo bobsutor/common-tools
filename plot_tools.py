@@ -14,7 +14,6 @@ import os
 import plotly.graph_objects as go  # type: ignore
 import plotly.io as pio  # type: ignore
 from PIL import Image
-from sty import fg  # type: ignore
 
 # import docx_tools
 import geo_tools
@@ -37,7 +36,7 @@ from common_data import USE_PLEX
 # import time
 
 
-pio.defaults.default_format = "png"
+pio.defaults.default_format = "png"  # type: ignore
 
 BACKGROUND_COLOR = "white"
 # BACKGROUND_COLOR = "rgba(0,0,0,0)"  # transparent
@@ -108,7 +107,7 @@ def y_max_with_rounder(rounder, y_max):
     return y_max
 
 
-def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_companies):
+def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_companies, logger):
     if USE_PLEX:
         PLOT_FONT_FAMILY = "Arial, Aptos, san-serif, IBM Plex Sans"
     else:
@@ -117,7 +116,7 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
     # General settings
 
     if title:
-        print(f"Creating chart {fg.green}'{title}'{fg.rs}")
+        logger.info(f"  Creating chart '{title.replace(' ', ' ')}'")
 
     figure.update_layout(
         font_family=PLOT_FONT_FAMILY,
@@ -180,6 +179,11 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
             xaxis_title=f"{title_x}<br><br><span style='{copyright_style}'>{copyright_text}</span>",
             xaxis_title_font=dict(weight="bold", size=36),
         )
+    elif SHOW_DATE:
+        figure.update_layout(
+            xaxis_title=f"{title_x}<br><br><span style='{copyright_style}'>{TODAY}</span>",
+            xaxis_title_font=dict(weight="bold", size=36),
+        )
     else:
         figure.update_layout(xaxis_title=title_x, xaxis_title_font=dict(weight="bold", size=36))
 
@@ -192,9 +196,7 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
         if SHOW_TITLE and title:
             figure.update_layout(title={"text": title, "x": 0.5, "automargin": False, "font": font_spec})
             figure.update_layout(
-                title=dict(
-                    subtitle=dict(text=f"Total Number of Distinct Companies = {total_companies}", font=font_spec)
-                )
+                title=dict(subtitle=dict(text=f"Total Number of Distinct Companies = {total_companies}", font=font_spec))
             )
         else:
             figure.update_layout(
@@ -246,8 +248,9 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
         )
 
 
-def companies_in_countries_chart(xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file):
-    print("Building companies in countries chart: ", end="")
+def companies_in_countries_chart(xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file, logger):
+    logger.info("Building companies in countries chart: ")
+
     os_tools.start_timer()
 
     fig = go.Figure(
@@ -263,7 +266,7 @@ def companies_in_countries_chart(xs, ys, figure_count, title, title_x, title_y, 
         ]
     )
 
-    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies)
+    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger)
 
     if ys:
         max_ys = max(ys)
@@ -280,27 +283,19 @@ def companies_in_countries_chart(xs, ys, figure_count, title, title_x, title_y, 
     )
 
     if not os.path.exists(chart_file):
+        logger.critical(f"Chart file '{chart_file}' was not created.")
         os_tools.terminating_error(f"Chart file '{chart_file}' was not created.")
 
-    print(f"{os_tools.end_timer()} seconds")
+    logger.info(f"  Elapse time: {os_tools.end_timer()} seconds")
 
     return fig
 
 
 def companies_in_country_region_chart(
-    country_regions,
-    xs,
-    ys,
-    max_ys,
-    figure_count,
-    title,
-    title_x,
-    title_y,
-    total_companies,
-    rounder,
-    chart_file,
+    country_regions, xs, ys, max_ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file, logger
 ):
-    print(f"Building companies in {country_regions} chart: ", end="")
+    logger.info(f"Building companies in {country_regions} chart: ")
+
     os_tools.start_timer()
 
     fig = go.Figure(
@@ -316,7 +311,7 @@ def companies_in_country_region_chart(
         ]
     )
 
-    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies)
+    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger)
 
     # if ys:
     #     max_ys = max(ys)
@@ -334,13 +329,14 @@ def companies_in_country_region_chart(
         height=CHART_HEIGHT,
     )
 
-    print(f"{os_tools.end_timer()} seconds")
+    logger.info(f"  Elapsed time: {os_tools.end_timer()} seconds")
 
     return fig
 
 
-def companies_in_regions_chart(xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file):
-    print("Building companies in regions chart: ", end="")
+def companies_in_regions_chart(xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file, logger):
+    logger.info("Building companies in regions chart: ")
+
     os_tools.start_timer()
 
     region_order = geo_tools.get_region_abbreviations()
@@ -368,7 +364,7 @@ def companies_in_regions_chart(xs, ys, figure_count, title, title_x, title_y, to
         ]
     )
 
-    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies)
+    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger)
 
     if new_ys:
         max_ys = max(new_ys)
@@ -403,13 +399,14 @@ def companies_in_regions_chart(xs, ys, figure_count, title, title_x, title_y, to
         height=CHART_HEIGHT,
     )
 
-    print(f"{os_tools.end_timer()} seconds")
+    logger.info(f"  Elapsed time: {os_tools.end_timer()} seconds")
 
     return fig
 
 
-def years_founded_chart(xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file):
-    print("Building companies and years founded chart: ", end="")
+def years_founded_chart(xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file, logger):
+    logger.info("Building companies and years founded chart: ")
+
     os_tools.start_timer()
 
     fig = go.Figure(
@@ -425,7 +422,7 @@ def years_founded_chart(xs, ys, figure_count, title, title_x, title_y, total_com
         ]
     )
 
-    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies)
+    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger)
 
     if ys:
         max_ys = max(ys)
@@ -441,6 +438,6 @@ def years_founded_chart(xs, ys, figure_count, title, title_x, title_y, total_com
         height=CHART_HEIGHT,
     )
 
-    print(f"{os_tools.end_timer()} seconds")
+    logger.info(f"  Elapsed time: {os_tools.end_timer()} seconds")
 
     return fig

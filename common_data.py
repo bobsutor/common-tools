@@ -11,7 +11,7 @@ from datetime import date
 # Dates
 # -------------------------------------------------------------------------------------------------
 
-# REPORT_DATE = datetime.strptime("2025-04-03", "%Y-%m-%d").date()
+# REPORT_DATE = datetime.strptime("2026-04-03", "%Y-%m-%d").date()
 REPORT_DATE = date.today()
 
 TODAY = REPORT_DATE.strftime("%B %d, %Y").replace(" 0", " ")
@@ -52,11 +52,12 @@ elif SUBSTACK_MODE:
 else:
     BIG_LANDSCAPE = True
     CHART_PORTRAIT_MODE = False
-    SHOW_CHART_LOGOS = True
-    SHOW_DATE = False
+    SHOW_CHART_LOGOS = False
+    SHOW_DATE = True
     SHOW_FIGURE_NUMBERS = False
     SHOW_SUTOR_GROUP_COPYRIGHT = False
-    SHOW_TITLE = True
+    SHOW_TITLE = False
+
 
 BIG_LANDSCAPE_CHART_WIDTH = 2500
 BIG_LANDSCAPE_CHART_HEIGHT = 1406
@@ -79,7 +80,7 @@ else:
 
 OUR_COMPANY = "Sutor Group Intelligence and Advisory"
 
-COPYRIGHT = f"Copyright © 2025 {OUR_COMPANY}"
+COPYRIGHT = f"Copyright © 2026 {OUR_COMPANY}"
 
 DATA_FOLDER = "../../data/"
 ORGANIZATION_DATA_FOLDER = "../../data/organization-data/"

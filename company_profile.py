@@ -1,20 +1,30 @@
 # cspell:ignore asis Crunchbase ndash tagtext yattag noopener
 
+import calendar
 import json
-from datetime import date, datetime
+from datetime import date
+from datetime import datetime
+
+import yattag
 
 import os_tools
-import yattag
-from common_data import DATA_FOLDER, ORGANIZATION_DATA_FOLDER
+from common_data import DATA_FOLDER
+from common_data import ORGANIZATION_DATA_FOLDER
 
 TODAY_YY_MM_DD = date.today().strftime("%Y-%m-%d")
 
-NEWS_ARCHIVE_FILE = "news-archive.json"
+NEWS_ARCHIVE_FILE = "quantum-news-archive/news-archive.json"
+INVESTORS_FILE = "investors.json"
 
 MAX_NEWS_ITEMS = 30
 
-with open(f"{DATA_FOLDER}/{NEWS_ARCHIVE_FILE}", "rt", encoding="utf8") as file:
+SHOW_SENIOR_LEADERSHIP = True
+
+with open(f"{DATA_FOLDER}{NEWS_ARCHIVE_FILE}", "rt", encoding="utf8") as file:
     press_releases = json.load(file)
+
+with open(f"{DATA_FOLDER}{INVESTORS_FILE}", "rt", encoding="utf8") as file:
+    INVESTORS = json.load(file)
 
 
 def is_within_last_year(reference_date_str: str, target_date_str: str) -> bool:
@@ -49,6 +59,49 @@ def is_within_last_year(reference_date_str: str, target_date_str: str) -> bool:
     # - Strictly *after* the date one year prior
     # - Less than or equal to the reference date
     return one_year_prior < target_date <= ref_date
+
+
+def is_within_last_months(reference_date_str: str, target_date_str: str, months_ago: int) -> bool:
+    """
+    Checks if target_date is within the window of X months ending on reference_date.
+
+    Args:
+        reference_date_str: The reference date string ("YYYY-MM-DD").
+        target_date_str: The date string to check ("YYYY-MM-DD").
+        months_ago: The number of months to look back.
+
+    Returns:
+        True if target_date is strictly after (reference_date - months_ago)
+        and less than or equal to reference_date. False otherwise.
+
+    Raises:
+        ValueError: If date strings are not in "YYYY-MM-DD" format.
+    """
+    try:
+        ref_date = datetime.strptime(reference_date_str, "%Y-%m-%d").date()
+        target_date = datetime.strptime(target_date_str, "%Y-%m-%d").date()
+    except ValueError as exc:
+        raise ValueError("Invalid date format. Please use YYYY-MM-DD.") from exc
+
+    # 1. Calculate the new year and month
+    # We do the math on the month index to handle rolling over years backward
+    # (e.g., Going back 2 months from Jan 2024 -> Nov 2023)
+    new_year = ref_date.year + (ref_date.month - 1 - months_ago) // 12
+    new_month = (ref_date.month - 1 - months_ago) % 12 + 1
+
+    # 2. Handle "end of month" edge cases
+    # Example: 1 month before March 31st is not Feb 31st, it is Feb 28th (or 29th).
+    # calendar.monthrange returns (weekday, last_day_of_month)
+    last_day_of_new_month = calendar.monthrange(new_year, new_month)[1]
+
+    # We take the lesser of the original day or the valid last day of the new month
+    new_day = min(ref_date.day, last_day_of_new_month)
+
+    past_date = ref_date.replace(year=new_year, month=new_month, day=new_day)
+
+    # 3. Perform the comparison
+    # Target must be strictly after the past date and <= reference date
+    return past_date < target_date <= ref_date
 
 
 def build_company_profile(company_name: str, heading_level: str = "h3", indent_sections=True) -> str:
@@ -147,7 +200,7 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
     with tag("p", style=p_style):
         with tag(
             "a",
-            href=f"https://google.com/maps/search/{company_data['hq-address']['long']}",
+            href=f"https://google.com/maps/search/{company_data['address']['long']}",
             target="_blank",
             rel="noopener",
             title="See location on Google Maps",
@@ -167,103 +220,93 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
     with tag("p", style=p_style):
         text(" ".join(company_data["description"]["text"]))
 
-    with tag(heading_level):
-        text("Senior Leadership")
+    if SHOW_SENIOR_LEADERSHIP:
+        with tag(heading_level):
+            text("Senior Leadership")
 
-    with tag("table", style="width: 100%;"):
-        for role, role_data in company_data["leadership"].items():
-            with tag("tr"):
+        with tag("ul"):
+            for role, role_data in company_data["leadership"].items():
                 if not isinstance(role_data, list):
                     role_data = [role_data]
 
                 for person in role_data:
-                    with tag("td", style="width: 15%;"):
-                        if person["links"]["image"] is not None and person["links"]["image"]:
-                            if person["links"]["primary"] is not None and person["links"]["primary"]:
-                                with tag(
-                                    "a", href=person["links"]["primary"], target="_blank", rel="noopener"
-                                ):
-                                    doc.stag(
-                                        "img",
-                                        src=person["links"]["image"].strip(),
-                                        style="width: 5em; border-radius: 50%;",
-                                    )
-                            else:
-                                doc.stag(
-                                    "img",
-                                    src=person["links"]["image"].strip(),
-                                    style="width: 5em; border-radius: 50%;",
-                                )
-                        else:
-                            doc.asis("&nbsp;")
-                    with tag("td", style="width: 42.5%;"):
+                    with tag("li"):
                         if person["links"]["primary"] is not None and person["links"]["primary"]:
                             with tag("a", href=person["links"]["primary"], target="_blank", rel="noopener"):
                                 text(person["name"])
                         else:
                             text(person["name"])
 
-                    with tag("td", style="width: 42.5%;"):
+                        text(": ")
                         text(role)
 
-    # with tag("ul"):
-    #     for role, role_data in company_data["leadership"].items():
-    #         if not isinstance(role_data, list):
-    #             role_data = [role_data]
+        # with tag("table", style="width: 100%;"):
+        #     for role, role_data in company_data["leadership"].items():
+        #         with tag("tr"):
+        #             if not isinstance(role_data, list):
+        #                 role_data = [role_data]
 
-    #         for person in role_data:
-    #             with tag("li"):
-    #                 if person["links"]["primary"] is not None and person["links"]["primary"]:
-    #                     if ".linkedin." in person["links"]["primary"]:
-    #                         with tag(
-    #                             "a",
-    #                             href=person["links"]["primary"],
-    #                             target="_blank",
-    #                             title="Go to their LinkedIn profile",
-    #                         ):
-    #                             text(person["name"])
-    #                     else:
-    #                         with tag("a", href=person["links"]["primary"], target="_blank"):
-    #                             text(person["name"])
-    #                 else:
-    #                     text(person["name"])
+        #             for person in role_data:
+        #                 with tag("td", style="width: 15%;"):
+        #                     if person["links"]["image"] is not None and person["links"]["image"]:
+        #                         if person["links"]["primary"] is not None and person["links"]["primary"]:
+        #                             with tag("a", href=person["links"]["primary"], target="_blank", rel="noopener"):
+        #                                 doc.stag(
+        #                                     "img",
+        #                                     src=person["links"]["image"].strip(),
+        #                                     style="width: 5em; border-radius: 50%;",
+        #                                 )
+        #                         else:
+        #                             doc.stag(
+        #                                 "img",
+        #                                 src=person["links"]["image"].strip(),
+        #                                 style="width: 5em; border-radius: 50%;",
+        #                             )
+        #                     else:
+        #                         doc.asis("&nbsp;")
+        #                 with tag("td", style="width: 42.5%;"):
+        #                     if person["links"]["primary"] is not None and person["links"]["primary"]:
+        #                         with tag("a", href=person["links"]["primary"], target="_blank", rel="noopener"):
+        #                             text(person["name"])
+        #                     else:
+        #                         text(person["name"])
 
-    #                 text(", ")
-    #                 text(role)
-
-    # if "leadership" in company_data["quantum"] and company_data["quantum"]["leadership"]:
-    #     with tag(heading_level):
-    #         text("Quantum Leadership")
-
-    #     with tag("ul"):
-    #         for role, role_data in company_data["quantum"]["leadership"].items():
-    #             if not isinstance(role_data, list):
-    #                 role_data = [role_data]
-
-    #             for person in role_data:
-    #                 with tag("li"):
-    #                     if person["links"]["primary"] is not None and person["links"]["primary"]:
-    #                         with tag("a", href=person["links"]["primary"], target="_blank"):
-    #                             text(person["name"])
-    #                     else:
-    #                         text(person["name"])
-
-    #                     text(", ")
-    #                     text(role)
+        #                 with tag("td", style="width: 42.5%;"):
+        #                     text(role)
 
     # Show recent press releases and blog posts if there are any
+
+    if (
+        not company_data["financial"]["public"]
+        and company_data["financial"]["investors"]
+        and isinstance(company_data["financial"]["investors"], list)
+    ):
+        with tag(heading_level):
+            text("Investors")
+
+        with tag("ul"):
+            for investor in company_data["financial"]["investors"]:
+                with tag("li"):
+                    if investor in INVESTORS and INVESTORS[investor]["link"]:
+                        with tag(
+                            "a",
+                            href=INVESTORS[investor]["link"],
+                            target="_blank",
+                            rel="noopener",
+                            title="Go to investor website",
+                        ):
+                            text(investor)
+                    else:
+                        text(investor)
 
     company_news_items = []  # type: ignore
     other_earnings_briefs = []  # type: ignore
 
     for press_release_key, press_release_data in press_releases.items():
-        if (
-            "include-in-daily-links" in press_release_data
-            and not press_release_data["include-in-daily-links"]
-        ):
+        if "include-in-daily-links" in press_release_data and not press_release_data["include-in-daily-links"]:
             continue
 
-        if name in press_release_data["companies"]:
+        if name in press_release_data["organizations"]:
             the_title = press_release_key[12:]
 
             if the_title.startswith("Sutor Group Earnings Brief:"):
@@ -282,7 +325,7 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
     if other_earnings_briefs:
         filtered_announcements = []
         for announcement in other_earnings_briefs:
-            if announcement["date"] and not is_within_last_year(TODAY_YY_MM_DD, announcement["date"]):
+            if announcement["date"] and not is_within_last_months(TODAY_YY_MM_DD, announcement["date"], 18):
                 continue
 
             if not announcement["link"]:
@@ -309,7 +352,7 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
 
         filtered_announcements = []
         for announcement in company_news_items:
-            if announcement["date"] and not is_within_last_year(TODAY_YY_MM_DD, announcement["date"]):
+            if announcement["date"] and not is_within_last_months(TODAY_YY_MM_DD, announcement["date"], 18):
                 continue
 
             if not announcement["link"]:
@@ -344,8 +387,7 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
 
 
 if __name__ == "__main__":
-    COMPANY = "D-Wave Quantum"
-    with open(
-        f"../sg-reports/output/{COMPANY}-Company-Profile.html", "wt", encoding="utf-8"
-    ) as output_html_file:
+    COMPANY = "SEEQC"
+    # COMPANY = "D-Wave Quantum"
+    with open(f"../sg-reports/output/{COMPANY}-Company-Profile.html", "wt", encoding="utf-8") as output_html_file:
         print(build_company_profile(COMPANY, "h3", True), file=output_html_file)
