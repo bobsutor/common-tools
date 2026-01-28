@@ -1,15 +1,9 @@
-"""
-Formatting glossary with yattag
-"""
+# cspell:ignore yattag Aptos klass
+# cspell:disable
 
-# cspell:ignore addnext Aptos klass Oxml OxmlElement Pt yattag
-
-# from docx.oxml import OxmlElement
-# from docx.oxml.ns import qn
-import docx_tools
 from docx.shared import Pt
 
-# cspell:disable
+import docx_tools
 
 eu_countries = [
     "Austria",
@@ -398,7 +392,6 @@ oceania_countries = [
 
 nordic_countries = ["Denmark", "Finland", "Iceland", "Norway", "Sweden"]
 
-
 regions_data = {
     # this is the order they are shown on the chart
     "APAC": {"countries": apac_countries, "name": "Asia-Pacific"},
@@ -412,9 +405,7 @@ regions_data = {
     "Nordics": {"countries": nordic_countries, "name": "Nordics"},
 }
 
-
 regions_counts = dict()  # type: ignore
-
 
 for _region_abbreviation, _region_data in regions_data.items():
     regions_counts[_region_abbreviation] = dict()
@@ -484,10 +475,6 @@ us_states_and_territories = {
     "WY": "Wyoming",
 }
 
-us_state_counts: dict[str, int] = dict()
-
-for _state in us_states_and_territories.values():
-    us_state_counts[_state] = 0
 
 us_governors = {
     "Alabama": {"Governor": "Kay Ivey", "Party": "Republican"},
@@ -560,10 +547,6 @@ canadian_provinces_and_territories = {
     "YT": "Yukon",
 }
 
-canada_province_counts: dict[str, int] = dict()
-
-for _province in canadian_provinces_and_territories.values():
-    canada_province_counts[_province] = 0
 
 # Australian states and territories
 
@@ -599,12 +582,6 @@ german_states = {
     "TH": "Thuringia",
 }
 
-german_state_counts: dict[str, int] = dict()
-
-for _state in german_states.values():
-    german_state_counts[_state] = 0
-
-
 # French modern region names
 
 french_current_regions_names = [
@@ -622,13 +599,6 @@ french_current_regions_names = [
     "Pays de la Loire",
     "Provence-Alpes-Côte d'Azur",
 ]
-
-
-french_region_counts: dict[str, int] = dict()
-
-for _region in french_current_regions_names:
-    french_region_counts[_region] = 0
-
 
 # Indian states and union territories
 
@@ -670,7 +640,6 @@ indian_states_and_union_territories = [
     "Uttarakhand",
     "West Bengal",
 ]
-
 
 # Japanese prefectures
 
@@ -724,6 +693,31 @@ japanese_prefectures = [
     "Yamanashi",
 ]
 
+tokyo_special_wards = [
+    "Chiyoda-ku",
+    "Chuo-ku",
+    "Minato-ku",
+    "Shinjuku-ku",
+    "Bunkyo-ku",
+    "Taito-ku",
+    "Sumida-ku",
+    "Koto-ku",
+    "Shinagawa-ku",
+    "Meguro-ku",
+    "Ota-ku",
+    "Setagaya-ku",
+    "Shibuya-ku",
+    "Nakano-ku",
+    "Suginami-ku",
+    "Toshima-ku",
+    "Kita-ku",
+    "Arakawa-ku",
+    "Itabashi-ku",
+    "Nerima-ku",
+    "Adachi-ku",
+    "Katsushika-ku",
+    "Edogawa-ku",
+]
 
 # cspell:enable
 
@@ -764,105 +758,256 @@ def print_countries_in_regions_counts():
                 print(f"  {country}: {country_count}")
 
 
-def increment_state_in_US(address):
-    state = get_state_or_province(address)
-    assert state in us_states_and_territories.values()
-    us_state_counts[state] += 1  # type: ignore
+city_counts_by_country: dict[str, dict[str, int]] = dict()
 
 
-def get_US_state_counts():
-    states = []
-    counts = []
-    for _state, _count in us_state_counts.items():
-        if _count != 0:
-            states.append(_state)
-            counts.append(_count)
-    return states, counts
+def increment_city_count(address):
+    country = get_country(address)
+    city = get_city(address)
+
+    if country == "Japan" and city in tokyo_special_wards:
+        city = f"{city} - Tokyo"
+
+    if country not in city_counts_by_country:
+        city_counts_by_country[country] = dict()
+
+    if city not in city_counts_by_country[country]:
+        city_counts_by_country[country][city] = 1
+    else:
+        city_counts_by_country[country][city] += 1
 
 
-def increment_province_in_Canada(address):
+# -----------------------------------------------------------------------------
+# Canada
+# -----------------------------------------------------------------------------
+
+
+Canada_province_counts: dict[str, int] = dict()
+Canada_city_counts: dict[str, int] = dict()
+
+for _province in canadian_provinces_and_territories.values():
+    Canada_province_counts[_province] = 0
+
+
+def increment_Canada_province_count(address):
     province = get_state_or_province(address)
     assert province in canadian_provinces_and_territories.values()
-    canada_province_counts[province] += 1  # type: ignore
+    Canada_province_counts[province] += 1  # type: ignore
 
 
 def get_Canada_province_counts():
     provinces = []
     counts = []
-    for _province, _count in canada_province_counts.items():
+    for _province, _count in Canada_province_counts.items():
         if _count != 0:
             provinces.append(_province)
             counts.append(_count)
     return provinces, counts
 
 
-def increment_region_in_France(address):
+def increment_Canada_city_count(address):
+    city = get_city(address)
+    if city not in Canada_city_counts:
+        Canada_city_counts[city] = 1
+    else:
+        Canada_city_counts[city] += 1
+
+
+def get_Canada_city_counts():
+    sorted_Canada_city_counts = {k: Canada_city_counts[k] for k in sorted(Canada_city_counts)}
+    cities = []
+    counts = []
+    for _city, _count in sorted_Canada_city_counts.items():
+        if _count != 0:
+            cities.append(_city)
+            counts.append(_count)
+    return cities, counts
+
+
+# -----------------------------------------------------------------------------
+# France
+# -----------------------------------------------------------------------------
+
+France_region_counts: dict[str, int] = dict()
+France_city_counts: dict[str, int] = dict()
+
+for _region in french_current_regions_names:
+    France_region_counts[_region] = 0
+
+
+def increment_France_region_count(address):
     region = get_state_or_province(address)
     if region not in french_current_regions_names:
         raise ValueError(f"Unknown French region: {region}")
-    french_region_counts[region] += 1  # type: ignore
+    France_region_counts[region] += 1  # type: ignore
 
 
-def get_French_region_counts():
+def get_France_region_counts():
     regions = []
     counts = []
-    for _region, _count in french_region_counts.items():
+    for _region, _count in France_region_counts.items():
         if _count != 0:
             regions.append(_region)
             counts.append(_count)
     return regions, counts
 
 
-def increment_state_in_Germany(address):
+def increment_France_city_count(address):
+    city = get_city(address)
+    if city not in France_city_counts:
+        France_city_counts[city] = 1
+    else:
+        France_city_counts[city] += 1
+
+
+def get_France_city_counts():
+    sorted_France_city_counts = {k: France_city_counts[k] for k in sorted(France_city_counts)}
+    cities = []
+    counts = []
+    for _city, _count in sorted_France_city_counts.items():
+        if _count != 0:
+            cities.append(_city)
+            counts.append(_count)
+    return cities, counts
+
+
+# -----------------------------------------------------------------------------
+# Germany
+# -----------------------------------------------------------------------------
+
+Germany_state_counts: dict[str, int] = dict()
+Germany_city_counts: dict[str, int] = dict()
+
+for _state in german_states.values():
+    Germany_state_counts[_state] = 0
+
+
+def increment_Germany_state_count(address):
     state = get_state_or_province(address)
     if state not in german_states.values():
         raise ValueError(f"Unknown German state: {state}")
-    german_state_counts[state] += 1  # type: ignore
+    Germany_state_counts[state] += 1  # type: ignore
 
 
-def get_German_state_counts():
+def get_Germany_state_counts():
     states = []
     counts = []
-    for _state, _count in german_state_counts.items():
+    for _state, _count in Germany_state_counts.items():
         if _count != 0:
             states.append(_state)
             counts.append(_count)
     return states, counts
 
 
-def increment_state_province_or_local_region(address):
-    country = get_country(address)
-
-    if country == "USA":
-        increment_state_in_US(address)
-
-    elif country == "Canada":
-        increment_province_in_Canada(address)
-
-    elif country == "France":
-        increment_region_in_France(address)
-
-    elif country == "Germany":
-        increment_state_in_Germany(address)
-
-    elif country == "UK":
-        increment_UK_city(address)
+def increment_Germany_city_count(address):
+    city = get_city(address)
+    if city not in Germany_city_counts:
+        Germany_city_counts[city] = 1
+    else:
+        Germany_city_counts[city] += 1
 
 
-def get_max_companies_in_a_state_or_province():
-    m = max(us_state_counts.values())
-    m = max(m, *canada_province_counts.values())
-    m = max(m, *french_region_counts.values())
-    m = max(m, *german_state_counts.values())
-    return m
+def get_Germany_city_counts():
+    sorted_Germany_city_counts = {k: Germany_city_counts[k] for k in sorted(Germany_city_counts)}
+    cities = []
+    counts = []
+    for _city, _count in sorted_Germany_city_counts.items():
+        if _count != 0:
+            cities.append(_city)
+            counts.append(_count)
+    return cities, counts
 
 
-# UK cities
+# -----------------------------------------------------------------------------
+# Italy
+# -----------------------------------------------------------------------------
+
+Italy_city_counts: dict[str, int] = dict()
+
+
+def increment_Italy_city_count(address):
+    city = get_city(address)
+    if city not in Italy_city_counts:
+        Italy_city_counts[city] = 1
+    else:
+        Italy_city_counts[city] += 1
+
+
+def get_Italy_city_counts():
+    sorted_Italy_city_counts = {k: Italy_city_counts[k] for k in sorted(Italy_city_counts)}
+    cities = []
+    counts = []
+    for _city, _count in sorted_Italy_city_counts.items():
+        if _count != 0:
+            cities.append(_city)
+            counts.append(_count)
+    return cities, counts
+
+
+# -----------------------------------------------------------------------------
+# Japan
+# -----------------------------------------------------------------------------
+
+Japan_city_counts: dict[str, int] = dict()
+
+
+def increment_Japan_city_count(address):
+    city = get_city(address)
+
+    if city in tokyo_special_wards:
+        city = f"{city} - Tokyo"
+
+    if city not in Japan_city_counts:
+        Japan_city_counts[city] = 1
+    else:
+        Japan_city_counts[city] += 1
+
+
+def get_Japan_city_counts():
+    sorted_Japan_city_counts = {k: Japan_city_counts[k] for k in sorted(Japan_city_counts)}
+    cities = []
+    counts = []
+    for _city, _count in sorted_Japan_city_counts.items():
+        if _count != 0:
+            cities.append(_city)
+            counts.append(_count)
+    return cities, counts
+
+
+# -----------------------------------------------------------------------------
+# Spain
+# -----------------------------------------------------------------------------
+
+Spain_city_counts: dict[str, int] = dict()
+
+
+def increment_Spain_city_count(address):
+    city = get_city(address)
+    if city not in Spain_city_counts:
+        Spain_city_counts[city] = 1
+    else:
+        Spain_city_counts[city] += 1
+
+
+def get_Spain_city_counts():
+    sorted_Spain_city_counts = {k: Spain_city_counts[k] for k in sorted(Spain_city_counts)}
+    cities = []
+    counts = []
+    for _city, _count in sorted_Spain_city_counts.items():
+        if _count != 0:
+            cities.append(_city)
+            counts.append(_count)
+    return cities, counts
+
+
+# -----------------------------------------------------------------------------
+# UK
+# -----------------------------------------------------------------------------
 
 UK_city_counts: dict[str, int] = dict()
 
 
-def increment_UK_city(address):
+def increment_UK_city_count(address):
     city = get_city(address)
     if city not in UK_city_counts:
         UK_city_counts[city] = 1
@@ -879,6 +1024,77 @@ def get_UK_city_counts():
             cities.append(_city)
             counts.append(_count)
     return cities, counts
+
+
+# -----------------------------------------------------------------------------
+# US
+# -----------------------------------------------------------------------------
+
+us_state_counts: dict[str, int] = dict()
+
+for _state in us_states_and_territories.values():
+    us_state_counts[_state] = 0
+
+
+def increment_US_state_count(address):
+    state = get_state_or_province(address)
+    assert state in us_states_and_territories.values()
+    us_state_counts[state] += 1  # type: ignore
+
+
+def get_US_state_counts():
+    states = []
+    counts = []
+    for _state, _count in us_state_counts.items():
+        if _count != 0:
+            states.append(_state)
+            counts.append(_count)
+    return states, counts
+
+
+# -----------------------------------------------------------------------------
+# General city or region/state increments
+# -----------------------------------------------------------------------------
+
+
+def increment_state_province_or_local_region(address):
+    increment_city_count(address)
+    country = get_country(address)
+
+    if country == "USA":
+        increment_US_state_count(address)
+
+    elif country == "Canada":
+        increment_Canada_city_count(address)
+        increment_Canada_province_count(address)
+
+    elif country == "France":
+        increment_France_city_count(address)
+        increment_France_region_count(address)
+
+    elif country == "Germany":
+        increment_Germany_city_count(address)
+        increment_Germany_state_count(address)
+
+    elif country == "Italy":
+        increment_Italy_city_count(address)
+
+    elif country == "Japan":
+        increment_Japan_city_count(address)
+
+    elif country == "Spain":
+        increment_Spain_city_count(address)
+
+    elif country == "UK":
+        increment_UK_city_count(address)
+
+
+def get_max_companies_in_a_state_or_province():
+    m = max(us_state_counts.values())
+    m = max(m, *Canada_province_counts.values())
+    m = max(m, *France_region_counts.values())
+    m = max(m, *Germany_state_counts.values())
+    return m
 
 
 def get_regions_and_counts():

@@ -107,7 +107,9 @@ def y_max_with_rounder(rounder, y_max):
     return y_max
 
 
-def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_companies, logger):
+def set_figure_defaults(
+    figure, figure_count, title, title_x, title_y, total_companies, logger, companies_and_organizations=False
+):
     if USE_PLEX:
         PLOT_FONT_FAMILY = "Arial, Aptos, san-serif, IBM Plex Sans"
     else:
@@ -193,27 +195,24 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
     font_spec["weight"] = "bold"
 
     if total_companies > 0:
+        if companies_and_organizations:
+            total_text = f"Total Number of Distinct Companies and Organizations = {total_companies}"
+        else:
+            total_text = f"Total Number of Distinct Companies = {total_companies}"
+
         if SHOW_TITLE and title:
             figure.update_layout(title={"text": title, "x": 0.5, "automargin": False, "font": font_spec})
-            figure.update_layout(
-                title=dict(subtitle=dict(text=f"Total Number of Distinct Companies = {total_companies}", font=font_spec))
-            )
+            figure.update_layout(title=dict(subtitle=dict(text=total_text, font=font_spec)))
         else:
             figure.update_layout(
                 title={
-                    "text": f"Total Number of Distinct Companies = {total_companies}",
+                    "text": total_text,
                     "x": 0.5,
                     "automargin": False,
                     "font": font_spec,
                 }
             )
-            # figure.update_layout(
-            #     title=dict(
-            #         subtitle=dict(
-            #             text=f"Total Number of Distinct Companies = {total_companies}", font=font_spec
-            #         )
-            #     )
-            # )
+
     elif SHOW_TITLE and title:
         figure.update_layout(title={"text": title, "x": 0.5, "automargin": False, "font": font_spec})
 
@@ -248,7 +247,9 @@ def set_figure_defaults(figure, figure_count, title, title_x, title_y, total_com
         )
 
 
-def companies_in_countries_chart(xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file, logger):
+def companies_in_countries_chart(
+    xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file, logger, companies_and_organizations
+):
     logger.info("Building companies in countries chart: ")
 
     os_tools.start_timer()
@@ -266,7 +267,7 @@ def companies_in_countries_chart(xs, ys, figure_count, title, title_x, title_y, 
         ]
     )
 
-    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger)
+    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger, companies_and_organizations)
 
     if ys:
         max_ys = max(ys)
@@ -292,7 +293,19 @@ def companies_in_countries_chart(xs, ys, figure_count, title, title_x, title_y, 
 
 
 def companies_in_country_region_chart(
-    country_regions, xs, ys, max_ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file, logger
+    country_regions,
+    xs,
+    ys,
+    max_ys,
+    figure_count,
+    title,
+    title_x,
+    title_y,
+    total_companies,
+    rounder,
+    chart_file,
+    logger,
+    companies_and_organizations,
 ):
     logger.info(f"Building companies in {country_regions} chart: ")
 
@@ -311,7 +324,7 @@ def companies_in_country_region_chart(
         ]
     )
 
-    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger)
+    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger, companies_and_organizations)
 
     # if ys:
     #     max_ys = max(ys)
@@ -334,7 +347,9 @@ def companies_in_country_region_chart(
     return fig
 
 
-def companies_in_regions_chart(xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file, logger):
+def companies_in_regions_chart(
+    xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file, logger, companies_and_organizations
+):
     logger.info("Building companies in regions chart: ")
 
     os_tools.start_timer()
@@ -364,7 +379,7 @@ def companies_in_regions_chart(xs, ys, figure_count, title, title_x, title_y, to
         ]
     )
 
-    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger)
+    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger, companies_and_organizations)
 
     if new_ys:
         max_ys = max(new_ys)
@@ -404,7 +419,9 @@ def companies_in_regions_chart(xs, ys, figure_count, title, title_x, title_y, to
     return fig
 
 
-def years_founded_chart(xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file, logger):
+def years_founded_chart(
+    xs, ys, figure_count, title, title_x, title_y, total_companies, rounder, chart_file, logger, companies_and_organizations
+):
     logger.info("Building companies and years founded chart: ")
 
     os_tools.start_timer()
@@ -422,7 +439,7 @@ def years_founded_chart(xs, ys, figure_count, title, title_x, title_y, total_com
         ]
     )
 
-    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger)
+    set_figure_defaults(fig, figure_count, title, title_x, title_y, total_companies, logger, companies_and_organizations)
 
     if ys:
         max_ys = max(ys)

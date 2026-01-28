@@ -195,14 +195,15 @@ def word_format_glossary_terms(terms, word_document):
         # p = word_document.add_paragraph(" ".join(term_data["definition"]))
         p.paragraph_format.left_indent = Pt(18)
 
-        p.add_run(" (")
-        run = p.add_run("Source: ")
-        run.italic = True
-        if term_data["source"] == "Perplexity":
-            docx_tools.add_hyperlink(p, term_data["source"], "https://www.perplexity.ai/")
-        else:
-            p.add_run(term_data["source"])
-        p.add_run(")")
+        if "source" in term_data and term_data["source"]:
+            p.add_run(" (")
+            run = p.add_run("Source: ")
+            run.italic = True
+            if term_data["source"] == "Perplexity":
+                docx_tools.add_hyperlink(p, term_data["source"], "https://www.perplexity.ai/")
+            else:
+                p.add_run(term_data["source"])
+            p.add_run(")")
 
         if "notes" in term_data:
             p = word_document.add_paragraph(" ".join(term_data["notes"]))
