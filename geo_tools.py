@@ -761,7 +761,7 @@ def print_countries_in_regions_counts():
 city_counts_by_country: dict[str, dict[str, int]] = dict()
 
 
-def increment_city_count(address):
+def increment_city_count(address: str):
     country = get_country(address)
     city = get_city(address)
 
@@ -775,6 +775,20 @@ def increment_city_count(address):
         city_counts_by_country[country][city] = 1
     else:
         city_counts_by_country[country][city] += 1
+
+
+def get_city_count(country: str):
+    cities: list[str] = []
+    counts: list[int] = []
+
+    if country in city_counts_by_country:
+        city_counts_by_country[country] = dict(sorted(city_counts_by_country[country].items()))
+
+        for city, count in city_counts_by_country[country].items():
+            cities.append(city)
+            counts.append(count)
+
+    return cities, counts
 
 
 # -----------------------------------------------------------------------------
@@ -813,17 +827,6 @@ def increment_Canada_city_count(address):
         Canada_city_counts[city] += 1
 
 
-def get_Canada_city_counts():
-    sorted_Canada_city_counts = {k: Canada_city_counts[k] for k in sorted(Canada_city_counts)}
-    cities = []
-    counts = []
-    for _city, _count in sorted_Canada_city_counts.items():
-        if _count != 0:
-            cities.append(_city)
-            counts.append(_count)
-    return cities, counts
-
-
 # -----------------------------------------------------------------------------
 # France
 # -----------------------------------------------------------------------------
@@ -858,17 +861,6 @@ def increment_France_city_count(address):
         France_city_counts[city] = 1
     else:
         France_city_counts[city] += 1
-
-
-def get_France_city_counts():
-    sorted_France_city_counts = {k: France_city_counts[k] for k in sorted(France_city_counts)}
-    cities = []
-    counts = []
-    for _city, _count in sorted_France_city_counts.items():
-        if _count != 0:
-            cities.append(_city)
-            counts.append(_count)
-    return cities, counts
 
 
 # -----------------------------------------------------------------------------
@@ -907,17 +899,6 @@ def increment_Germany_city_count(address):
         Germany_city_counts[city] += 1
 
 
-def get_Germany_city_counts():
-    sorted_Germany_city_counts = {k: Germany_city_counts[k] for k in sorted(Germany_city_counts)}
-    cities = []
-    counts = []
-    for _city, _count in sorted_Germany_city_counts.items():
-        if _count != 0:
-            cities.append(_city)
-            counts.append(_count)
-    return cities, counts
-
-
 # -----------------------------------------------------------------------------
 # Italy
 # -----------------------------------------------------------------------------
@@ -931,17 +912,6 @@ def increment_Italy_city_count(address):
         Italy_city_counts[city] = 1
     else:
         Italy_city_counts[city] += 1
-
-
-def get_Italy_city_counts():
-    sorted_Italy_city_counts = {k: Italy_city_counts[k] for k in sorted(Italy_city_counts)}
-    cities = []
-    counts = []
-    for _city, _count in sorted_Italy_city_counts.items():
-        if _count != 0:
-            cities.append(_city)
-            counts.append(_count)
-    return cities, counts
 
 
 # -----------------------------------------------------------------------------
@@ -963,17 +933,6 @@ def increment_Japan_city_count(address):
         Japan_city_counts[city] += 1
 
 
-def get_Japan_city_counts():
-    sorted_Japan_city_counts = {k: Japan_city_counts[k] for k in sorted(Japan_city_counts)}
-    cities = []
-    counts = []
-    for _city, _count in sorted_Japan_city_counts.items():
-        if _count != 0:
-            cities.append(_city)
-            counts.append(_count)
-    return cities, counts
-
-
 # -----------------------------------------------------------------------------
 # Spain
 # -----------------------------------------------------------------------------
@@ -989,17 +948,6 @@ def increment_Spain_city_count(address):
         Spain_city_counts[city] += 1
 
 
-def get_Spain_city_counts():
-    sorted_Spain_city_counts = {k: Spain_city_counts[k] for k in sorted(Spain_city_counts)}
-    cities = []
-    counts = []
-    for _city, _count in sorted_Spain_city_counts.items():
-        if _count != 0:
-            cities.append(_city)
-            counts.append(_count)
-    return cities, counts
-
-
 # -----------------------------------------------------------------------------
 # UK
 # -----------------------------------------------------------------------------
@@ -1013,17 +961,6 @@ def increment_UK_city_count(address):
         UK_city_counts[city] = 1
     else:
         UK_city_counts[city] += 1
-
-
-def get_UK_city_counts():
-    sorted_UK_city_counts = {k: UK_city_counts[k] for k in sorted(UK_city_counts)}
-    cities = []
-    counts = []
-    for _city, _count in sorted_UK_city_counts.items():
-        if _count != 0:
-            cities.append(_city)
-            counts.append(_count)
-    return cities, counts
 
 
 # -----------------------------------------------------------------------------
@@ -1065,28 +1002,13 @@ def increment_state_province_or_local_region(address):
         increment_US_state_count(address)
 
     elif country == "Canada":
-        increment_Canada_city_count(address)
         increment_Canada_province_count(address)
 
     elif country == "France":
-        increment_France_city_count(address)
         increment_France_region_count(address)
 
     elif country == "Germany":
-        increment_Germany_city_count(address)
         increment_Germany_state_count(address)
-
-    elif country == "Italy":
-        increment_Italy_city_count(address)
-
-    elif country == "Japan":
-        increment_Japan_city_count(address)
-
-    elif country == "Spain":
-        increment_Spain_city_count(address)
-
-    elif country == "UK":
-        increment_UK_city_count(address)
 
 
 def get_max_companies_in_a_state_or_province():
