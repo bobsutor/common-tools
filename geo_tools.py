@@ -1,4 +1,4 @@
-# cspell:ignore yattag Aptos klass
+# cspell:ignore yattag Aptos klass Québec
 # cspell:disable
 
 from docx.shared import Pt
@@ -937,7 +937,7 @@ COUNTRY_DATA_FOR_NEWS_CATEGORIES = {
             "Montreal",
             "Montréal",
             "Ottawa",
-            "Quebec City",
+            "Québec City",
             "Québec City",
             "Sherbrooke",
             "Toronto",
@@ -956,7 +956,7 @@ COUNTRY_DATA_FOR_NEWS_CATEGORIES = {
             "Nova Scotia",
             "Ontario",
             "Prince Edward Island",
-            "Quebec",
+            "Québec",
             "Québec",
             "Saskatchewan",
         ],
@@ -1580,8 +1580,18 @@ us_states_and_territories: dict[str, dict[str, str | list[str]]] = {
     "NY": {
         "name": "New York",
         "emoji": "🗽",
-        "cities": ["Albany", "Buffalo", "NYC", "New York City", "Rochester", "Stonybrook", "Syracuse"],
-        "other-terms": ["Schumer", "Gillibrand", "Hochul"],
+        "cities": [
+            "Albany",
+            "Buffalo",
+            "NYC",
+            "New York City",
+            "Rochester",
+            "Stonybrook",
+            "Syracuse",
+            "Yorktown Heights",
+            "Brooklyn",
+        ],
+        "other-terms": ["Schumer", "Gillibrand", "Hochul", "SUNY"],
     },
     "NC": {"name": "North Carolina", "emoji": "✈️", "cities": ["Raleigh"], "other-terms": []},
     "ND": {"name": "North Dakota", "emoji": "🦬", "cities": ["Bismarck", "Fargo", "Grand Forks"], "other-terms": []},
@@ -1672,20 +1682,70 @@ us_governors = {
 
 # Canadian provinces and territories
 
-canadian_provinces_and_territories = {
-    "AB": "Alberta",
-    "BC": "British Columbia",
-    "MB": "Manitoba",
-    "NB": "New Brunswick",
-    "NL": "Newfoundland and Labrador",
-    "NS": "Nova Scotia",
-    "NT": "Northwest Territories",
-    "NU": "Nunavut",
-    "ON": "Ontario",
-    "PE": "Prince Edward Island",
-    "QC": "Québec",
-    "SK": "Saskatchewan",
-    "YT": "Yukon",
+canadian_provinces_and_territories: dict[str, dict[str, str | list[str]]] = {
+    "AB": {
+        "name": "Alberta",
+        "emoji": "🌹",
+        "cities": ["Calgary", "Edmonton", "Red Deer"],
+        "other-terms": [],
+    },
+    "BC": {
+        "name": "British Columbia",
+        "emoji": "🌲",
+        "cities": ["Vancouver"],
+        "other-terms": [],
+    },
+    "MB": {
+        "name": "Manitoba",
+        "emoji": "🌾",
+        "cities": ["Winnipeg"],
+        "other-terms": [],
+    },
+    "NB": {"name": "New Brunswick", "emoji": "🦞", "cities": ["Fredericton", "Moncton"], "other-terms": []},
+    "NL": {
+        "name": "Newfoundland and Labrador",
+        "emoji": "⚓",
+        "cities": ["St. John's"],
+        "other-terms": [],
+    },
+    "NS": {
+        "name": "Nova Scotia",
+        "emoji": "🌊",
+        "cities": ["Halifax"],
+        "other-terms": [],
+    },
+    "ON": {
+        "name": "Ontario",
+        "emoji": "🏢",
+        "cities": ["Toronto", "Ottawa", "Mississauga", "Waterloo"],
+        "other-terms": [],
+    },
+    "PE": {
+        "name": "Prince Edward Island",
+        "emoji": "🥔",
+        "cities": [],
+        "other-terms": [],
+    },
+    "QC": {
+        "name": "Québec",
+        "emoji": "⚜️",
+        "cities": ["Montreal", "Montréal", "Québec City", "Québec", "Laval", "Gatineau", "Sherbrooke", "Trois-Rivières"],
+        "other-terms": [],
+    },
+    "SK": {
+        "name": "Saskatchewan",
+        "emoji": "🚜",
+        "cities": ["Saskatoon"],
+        "other-terms": [],
+    },
+    "NT": {
+        "name": "Northwest Territories",
+        "emoji": "🌌",
+        "cities": ["Yellowknife", "Inuvik"],
+        "other-terms": [],
+    },
+    "NU": {"name": "Nunavut", "emoji": "🧊", "cities": [], "other-terms": []},
+    "YT": {"name": "Yukon", "emoji": "⛏️", "cities": ["Whitehorse"], "other-terms": []},
 }
 
 
@@ -1937,171 +1997,181 @@ def get_city_count(country: str):
 # -----------------------------------------------------------------------------
 
 
-Canada_province_counts: dict[str, int] = dict()
-Canada_city_counts: dict[str, int] = dict()
-
-for _province in canadian_provinces_and_territories.values():
-    Canada_province_counts[_province] = 0
+canada_province_counts: dict[str, int] = dict()
+canada_city_counts: dict[str, int] = dict()
 
 
-def increment_Canada_province_count(address):
+for province_values in canadian_provinces_and_territories.values():
+    canada_province_counts[province_values["name"]] = 0  # type: ignore
+
+
+def increment_canada_province_count(address):
     province = get_state_or_province(address)
-    assert province in canadian_provinces_and_territories.values()
-    Canada_province_counts[province] += 1  # type: ignore
+
+    found = False
+    for province_dict in canadian_provinces_and_territories.values():
+        if province == province_dict["name"]:
+            found = True
+            break
+
+    if not found:
+        raise ValueError(f"Unknown Canadian province in address {address}")
+
+    canada_province_counts[province] += 1  # type: ignore
 
 
-def get_Canada_province_counts():
+def get_canada_province_counts():
     provinces = []
     counts = []
-    for _province, _count in Canada_province_counts.items():
+    for _province, _count in canada_province_counts.items():
         if _count != 0:
             provinces.append(_province)
             counts.append(_count)
     return provinces, counts
 
 
-def increment_Canada_city_count(address):
+def increment_canada_city_count(address):
     city = get_city(address)
-    if city not in Canada_city_counts:
-        Canada_city_counts[city] = 1
+    if city not in canada_city_counts:
+        canada_city_counts[city] = 1
     else:
-        Canada_city_counts[city] += 1
+        canada_city_counts[city] += 1
 
 
 # -----------------------------------------------------------------------------
 # France
 # -----------------------------------------------------------------------------
 
-France_region_counts: dict[str, int] = dict()
-France_city_counts: dict[str, int] = dict()
+france_region_counts: dict[str, int] = dict()
+france_city_counts: dict[str, int] = dict()
 
 for _region in french_current_regions_names:
-    France_region_counts[_region] = 0
+    france_region_counts[_region] = 0
 
 
-def increment_France_region_count(address):
+def increment_france_region_count(address):
     region = get_state_or_province(address)
     if region not in french_current_regions_names:
         raise ValueError(f"Unknown French region: {region}")
-    France_region_counts[region] += 1  # type: ignore
+    france_region_counts[region] += 1  # type: ignore
 
 
-def get_France_region_counts():
+def get_france_region_counts():
     regions = []
     counts = []
-    for _region, _count in France_region_counts.items():
+    for _region, _count in france_region_counts.items():
         if _count != 0:
             regions.append(_region)
             counts.append(_count)
     return regions, counts
 
 
-def increment_France_city_count(address):
+def increment_france_city_count(address):
     city = get_city(address)
-    if city not in France_city_counts:
-        France_city_counts[city] = 1
+    if city not in france_city_counts:
+        france_city_counts[city] = 1
     else:
-        France_city_counts[city] += 1
+        france_city_counts[city] += 1
 
 
 # -----------------------------------------------------------------------------
 # Germany
 # -----------------------------------------------------------------------------
 
-Germany_state_counts: dict[str, int] = dict()
-Germany_city_counts: dict[str, int] = dict()
+germany_state_counts: dict[str, int] = dict()
+germany_city_counts: dict[str, int] = dict()
 
 for _state in german_states.values():
-    Germany_state_counts[_state] = 0
+    germany_state_counts[_state] = 0
 
 
-def increment_Germany_state_count(address):
+def increment_germany_state_count(address):
     state = get_state_or_province(address)
     if state not in german_states.values():
         raise ValueError(f"Unknown German state: {state}")
-    Germany_state_counts[state] += 1  # type: ignore
+    germany_state_counts[state] += 1  # type: ignore
 
 
-def get_Germany_state_counts():
+def get_germany_state_counts():
     states = []
     counts = []
-    for _state, _count in Germany_state_counts.items():
+    for _state, _count in germany_state_counts.items():
         if _count != 0:
             states.append(_state)
             counts.append(_count)
     return states, counts
 
 
-def increment_Germany_city_count(address):
+def increment_germany_city_count(address):
     city = get_city(address)
-    if city not in Germany_city_counts:
-        Germany_city_counts[city] = 1
+    if city not in germany_city_counts:
+        germany_city_counts[city] = 1
     else:
-        Germany_city_counts[city] += 1
+        germany_city_counts[city] += 1
 
 
 # -----------------------------------------------------------------------------
 # Italy
 # -----------------------------------------------------------------------------
 
-Italy_city_counts: dict[str, int] = dict()
+italy_city_counts: dict[str, int] = dict()
 
 
-def increment_Italy_city_count(address):
+def increment_italy_city_count(address):
     city = get_city(address)
-    if city not in Italy_city_counts:
-        Italy_city_counts[city] = 1
+    if city not in italy_city_counts:
+        italy_city_counts[city] = 1
     else:
-        Italy_city_counts[city] += 1
+        italy_city_counts[city] += 1
 
 
 # -----------------------------------------------------------------------------
 # Japan
 # -----------------------------------------------------------------------------
 
-Japan_city_counts: dict[str, int] = dict()
+japan_city_counts: dict[str, int] = dict()
 
 
-def increment_Japan_city_count(address):
+def increment_japan_city_count(address):
     city = get_city(address)
 
     if city in tokyo_special_wards:
         city = f"{city} - Tokyo"
 
-    if city not in Japan_city_counts:
-        Japan_city_counts[city] = 1
+    if city not in japan_city_counts:
+        japan_city_counts[city] = 1
     else:
-        Japan_city_counts[city] += 1
+        japan_city_counts[city] += 1
 
 
 # -----------------------------------------------------------------------------
 # Spain
 # -----------------------------------------------------------------------------
 
-Spain_city_counts: dict[str, int] = dict()
+spain_city_counts: dict[str, int] = dict()
 
 
-def increment_Spain_city_count(address):
+def increment_spain_city_count(address):
     city = get_city(address)
-    if city not in Spain_city_counts:
-        Spain_city_counts[city] = 1
+    if city not in spain_city_counts:
+        spain_city_counts[city] = 1
     else:
-        Spain_city_counts[city] += 1
+        spain_city_counts[city] += 1
 
 
 # -----------------------------------------------------------------------------
 # UK
 # -----------------------------------------------------------------------------
 
-UK_city_counts: dict[str, int] = dict()
+uk_city_counts: dict[str, int] = dict()
 
 
-def increment_UK_city_count(address):
+def increment_uk_city_count(address):
     city = get_city(address)
-    if city not in UK_city_counts:
-        UK_city_counts[city] = 1
+    if city not in uk_city_counts:
+        uk_city_counts[city] = 1
     else:
-        UK_city_counts[city] += 1
+        uk_city_counts[city] += 1
 
 
 # -----------------------------------------------------------------------------
@@ -2116,6 +2186,16 @@ for state_values in us_states_and_territories.values():
 
 def increment_US_state_count(address):
     state = get_state_or_province(address)
+
+    found = False
+    for state_dict in us_states_and_territories.values():
+        if state == state_dict["name"]:
+            found = True
+            break
+
+    if not found:
+        raise ValueError(f"Unknown US state province in address {address}")
+
     # assert state in us_states_and_territories.values()
     us_state_counts[state] += 1  # type: ignore
 
@@ -2143,20 +2223,20 @@ def increment_state_province_or_local_region(address):
         increment_US_state_count(address)
 
     elif country == "Canada":
-        increment_Canada_province_count(address)
+        increment_canada_province_count(address)
 
     elif country == "France":
-        increment_France_region_count(address)
+        increment_france_region_count(address)
 
     elif country == "Germany":
-        increment_Germany_state_count(address)
+        increment_germany_state_count(address)
 
 
 def get_max_companies_in_a_state_or_province():
     m = max(us_state_counts.values())
-    m = max(m, *Canada_province_counts.values())
-    m = max(m, *France_region_counts.values())
-    m = max(m, *Germany_state_counts.values())
+    m = max(m, *canada_province_counts.values())
+    m = max(m, *france_region_counts.values())
+    m = max(m, *germany_state_counts.values())
     return m
 
 
@@ -2262,13 +2342,17 @@ def get_state_or_province(address_):
 
     if len(address_parts) > 2:
         state = address_parts[-2].strip()
+
+        if state == "Québec":
+            state = "Québec"
+
         country = address_parts[-1].strip()
 
         if country == "USA" and state in us_states_and_territories:
             return us_states_and_territories[state]["name"]
 
         if country == "Canada" and state in canadian_provinces_and_territories:
-            return canadian_provinces_and_territories[state]
+            return canadian_provinces_and_territories[state]["name"]
 
         if country == "Australia" and state in australian_states_and_territories:
             return australian_states_and_territories[state]
