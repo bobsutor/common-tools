@@ -1555,28 +1555,28 @@ us_states_and_territories: dict[str, dict[str, str | list[str]]] = {
     "DC": {"name": "District of Columbia", "emoji": "🏛️", "cities": [], "other-terms": []},
     "FL": {"name": "Florida", "emoji": "☀️", "cities": ["Jacksonville", "Miami", "Orlando", "Tallahassee"], "other-terms": []},
     "GA": {"name": "Georgia", "emoji": "🍑", "cities": ["Atlanta", "Augusta"], "other-terms": []},
-    "GU": {"name": "Guam", "emoji": "�", "cities": ["Dededo", "Hagåtña", "Yigo"], "other-terms": []},
-    "HI": {"name": "Hawaii", "emoji": "�", "cities": ["Honolulu"], "other-terms": []},
+    "GU": {"name": "Guam", "emoji": "🇬🇺", "cities": ["Dededo", "Hagåtña", "Yigo"], "other-terms": []},
+    "HI": {"name": "Hawaii", "emoji": "🤙", "cities": ["Honolulu"], "other-terms": []},
     "ID": {"name": "Idaho", "emoji": "🥔", "cities": ["Boise"], "other-terms": []},
     "IL": {"name": "Illinois", "emoji": "🏙️", "cities": ["Chicago"], "other-terms": ["IQMP"]},
-    "IN": {"name": "Indiana", "emoji": "�️", "cities": ["Indianapolis"], "other-terms": []},
-    "IA": {"name": "Iowa", "emoji": "�", "cities": ["Cedar Rapids", "Des Moines"], "other-terms": []},
-    "KS": {"name": "Kansas", "emoji": "�", "cities": ["Topeka", "Wichita"], "other-terms": []},
+    "IN": {"name": "Indiana", "emoji": "�🏀", "cities": ["Indianapolis"], "other-terms": []},
+    "IA": {"name": "Iowa", "emoji": "🌽", "cities": ["Cedar Rapids", "Des Moines"], "other-terms": []},
+    "KS": {"name": "Kansas", "emoji": "🌻", "cities": ["Topeka", "Wichita"], "other-terms": []},
     "KY": {"name": "Kentucky", "emoji": "🐎", "cities": ["Louisville"], "other-terms": []},
     "LA": {"name": "Louisiana", "emoji": "🎷", "cities": ["Baton Rouge", "New Orleans", "Shreveport"], "other-terms": []},
     "ME": {"name": "Maine", "emoji": "🦞", "cities": [], "other-terms": []},
-    "MD": {"name": "Maryland", "emoji": "�", "cities": ["Annapolis", "Baltimore"], "other-terms": []},
+    "MD": {"name": "Maryland", "emoji": "🦀", "cities": ["Annapolis", "Baltimore"], "other-terms": []},
     "MA": {"name": "Massachusetts", "emoji": "🎓", "cities": ["Boston", "Worcester"], "other-terms": []},
     "MI": {"name": "Michigan", "emoji": "🚗", "cities": ["Detroit", "Grand Rapids", "Lansing"], "other-terms": []},
-    "MN": {"name": "Minnesota", "emoji": "�", "cities": ["Minneapolis", "St. Paul"], "other-terms": []},
+    "MN": {"name": "Minnesota", "emoji": "🛶", "cities": ["Minneapolis", "St. Paul"], "other-terms": []},
     "MS": {"name": "Mississippi", "emoji": "🎸", "cities": ["Gulfport"], "other-terms": []},
     "MO": {"name": "Missouri", "emoji": "🫏", "cities": ["Kansas City", "St. Louis"], "other-terms": []},
     "MT": {"name": "Montana", "emoji": "⛰️", "cities": ["Billings", "Helena", "Missoula"], "other-terms": []},
     "NE": {"name": "Nebraska", "emoji": "🌾", "cities": ["Omaha"], "other-terms": []},
-    "NV": {"name": "Nevada", "emoji": "�", "cities": ["Carson City", "Las Vegas"], "other-terms": []},
+    "NV": {"name": "Nevada", "emoji": "🎲", "cities": ["Carson City", "Las Vegas"], "other-terms": []},
     "NH": {"name": "New Hampshire", "emoji": "⛰️", "cities": ["Nashua"], "other-terms": []},
     "NJ": {"name": "New Jersey", "emoji": "🎡", "cities": ["Jersey City", "Newark", "Princeton", "Trenton"], "other-terms": []},
-    "NM": {"name": "New Mexico", "emoji": "�️", "cities": ["Albuquerque", "Las Cruces", "Santa Fe"], "other-terms": []},
+    "NM": {"name": "New Mexico", "emoji": "🌶️", "cities": ["Albuquerque", "Las Cruces", "Santa Fe"], "other-terms": []},
     "NY": {
         "name": "New York",
         "emoji": "🗽",
@@ -1597,10 +1597,10 @@ us_states_and_territories: dict[str, dict[str, str | list[str]]] = {
     "ND": {"name": "North Dakota", "emoji": "🦬", "cities": ["Bismarck", "Fargo", "Grand Forks"], "other-terms": []},
     "MP": {"name": "Northern Mariana Islands", "emoji": "🇲🇵", "cities": ["Rota", "Saipan", "Tinian"], "other-terms": []},
     "OH": {"name": "Ohio", "emoji": "🌰", "cities": ["Cincinnati", "Cleveland", "Dayton"], "other-terms": []},
-    "OK": {"name": "Oklahoma", "emoji": "�️", "cities": ["Oklahoma City", "Tulsa"], "other-terms": []},
-    "OR": {"name": "Oregon", "emoji": "�", "cities": ["Portland"], "other-terms": []},
+    "OK": {"name": "Oklahoma", "emoji": "�🍉", "cities": ["Oklahoma City", "Tulsa"], "other-terms": []},
+    "OR": {"name": "Oregon", "emoji": "🦫", "cities": ["Portland"], "other-terms": []},
     "PA": {"name": "Pennsylvania", "emoji": "🔔", "cities": ["Harrisburg", "Philadelphia", "Pittsburgh"], "other-terms": []},
-    "PR": {"name": "Puerto Rico", "emoji": "�🇷", "cities": ["Bayamón", "San Juan"], "other-terms": []},
+    "PR": {"name": "Puerto Rico", "emoji": "🇵🇷", "cities": ["Bayamón", "San Juan"], "other-terms": []},
     "RI": {"name": "Rhode Island", "emoji": "⚓", "cities": ["Cranston", "Providence"], "other-terms": []},
     "SC": {"name": "South Carolina", "emoji": "⛳", "cities": [], "other-terms": []},
     "SD": {"name": "South Dakota", "emoji": "🗿", "cities": ["Rapid City", "Sioux Falls"], "other-terms": []},
@@ -1612,7 +1612,7 @@ us_states_and_territories: dict[str, dict[str, str | list[str]]] = {
         "other-terms": [],
     },
     "UT": {"name": "Utah", "emoji": "🧗", "cities": ["Salt Lake City"], "other-terms": []},
-    "VT": {"name": "Vermont", "emoji": "�", "cities": ["Burlington", "Montpelier"], "other-terms": []},
+    "VT": {"name": "Vermont", "emoji": "🍁", "cities": ["Burlington", "Montpelier"], "other-terms": []},
     "VA": {"name": "Virginia", "emoji": "🏛️", "cities": ["Richmond", "Virginia Beach"], "other-terms": []},
     "VI": {
         "name": "Virgin Islands",
@@ -1625,7 +1625,6 @@ us_states_and_territories: dict[str, dict[str, str | list[str]]] = {
     "WI": {"name": "Wisconsin", "emoji": "🧀", "cities": ["Green Bay", "Madison", "Milwaukee"], "other-terms": []},
     "WY": {"name": "Wyoming", "emoji": "🤠", "cities": ["Casper", "Cheyenne"], "other-terms": []},
 }
-
 
 us_governors = {
     "Alabama": {"Governor": "Kay Ivey", "Party": "Republican"},
@@ -1747,7 +1746,6 @@ canadian_provinces_and_territories: dict[str, dict[str, str | list[str]]] = {
     "NU": {"name": "Nunavut", "emoji": "🧊", "cities": [], "other-terms": []},
     "YT": {"name": "Yukon", "emoji": "⛏️", "cities": ["Whitehorse"], "other-terms": []},
 }
-
 
 # Australian states and territories
 
@@ -1996,10 +1994,8 @@ def get_city_count(country: str):
 # Canada
 # -----------------------------------------------------------------------------
 
-
 canada_province_counts: dict[str, int] = dict()
 canada_city_counts: dict[str, int] = dict()
-
 
 for province_values in canadian_provinces_and_territories.values():
     canada_province_counts[province_values["name"]] = 0  # type: ignore
@@ -2030,14 +2026,6 @@ def get_canada_province_counts():
     return provinces, counts
 
 
-def increment_canada_city_count(address):
-    city = get_city(address)
-    if city not in canada_city_counts:
-        canada_city_counts[city] = 1
-    else:
-        canada_city_counts[city] += 1
-
-
 # -----------------------------------------------------------------------------
 # France
 # -----------------------------------------------------------------------------
@@ -2064,14 +2052,6 @@ def get_france_region_counts():
             regions.append(_region)
             counts.append(_count)
     return regions, counts
-
-
-def increment_france_city_count(address):
-    city = get_city(address)
-    if city not in france_city_counts:
-        france_city_counts[city] = 1
-    else:
-        france_city_counts[city] += 1
 
 
 # -----------------------------------------------------------------------------
@@ -2102,76 +2082,32 @@ def get_germany_state_counts():
     return states, counts
 
 
-def increment_germany_city_count(address):
-    city = get_city(address)
-    if city not in germany_city_counts:
-        germany_city_counts[city] = 1
-    else:
-        germany_city_counts[city] += 1
-
-
 # -----------------------------------------------------------------------------
-# Italy
+# India
 # -----------------------------------------------------------------------------
 
-italy_city_counts: dict[str, int] = dict()
+india_state_counts: dict[str, int] = dict()
+india_city_counts: dict[str, int] = dict()
+
+for _state in indian_states_and_union_territories:
+    india_state_counts[_state] = 0
 
 
-def increment_italy_city_count(address):
-    city = get_city(address)
-    if city not in italy_city_counts:
-        italy_city_counts[city] = 1
-    else:
-        italy_city_counts[city] += 1
+def increment_india_state_count(address):
+    state = get_state_or_province(address)
+    if state not in indian_states_and_union_territories:
+        raise ValueError(f"Unknown Indian state: {state}")
+    india_state_counts[state] += 1  # type: ignore
 
 
-# -----------------------------------------------------------------------------
-# Japan
-# -----------------------------------------------------------------------------
-
-japan_city_counts: dict[str, int] = dict()
-
-
-def increment_japan_city_count(address):
-    city = get_city(address)
-
-    if city in tokyo_special_wards:
-        city = f"{city} - Tokyo"
-
-    if city not in japan_city_counts:
-        japan_city_counts[city] = 1
-    else:
-        japan_city_counts[city] += 1
-
-
-# -----------------------------------------------------------------------------
-# Spain
-# -----------------------------------------------------------------------------
-
-spain_city_counts: dict[str, int] = dict()
-
-
-def increment_spain_city_count(address):
-    city = get_city(address)
-    if city not in spain_city_counts:
-        spain_city_counts[city] = 1
-    else:
-        spain_city_counts[city] += 1
-
-
-# -----------------------------------------------------------------------------
-# UK
-# -----------------------------------------------------------------------------
-
-uk_city_counts: dict[str, int] = dict()
-
-
-def increment_uk_city_count(address):
-    city = get_city(address)
-    if city not in uk_city_counts:
-        uk_city_counts[city] = 1
-    else:
-        uk_city_counts[city] += 1
+def get_india_state_counts():
+    states = []
+    counts = []
+    for _state, _count in india_state_counts.items():
+        if _count != 0:
+            states.append(_state)
+            counts.append(_count)
+    return states, counts
 
 
 # -----------------------------------------------------------------------------
@@ -2231,12 +2167,28 @@ def increment_state_province_or_local_region(address):
     elif country == "Germany":
         increment_germany_state_count(address)
 
+    elif country == "India":
+        increment_india_state_count(address)
 
-def get_max_companies_in_a_state_or_province():
-    m = max(us_state_counts.values())
+
+def get_max_companies_in_a_state_or_province_or_city(include_us=False):
+    m = 0
+
+    if include_us:
+        m = max(m, *us_state_counts.values())
+
+    for country in ["Canada", "France", "Germany", "India", "Italy", "Japan", "Spain", "UK"]:
+        if country in city_counts_by_country and city_counts_by_country[country]:
+            m = max(m, *city_counts_by_country[country].values())
+
     m = max(m, *canada_province_counts.values())
+
     m = max(m, *france_region_counts.values())
+
     m = max(m, *germany_state_counts.values())
+
+    m = max(m, *india_state_counts.values())
+
     return m
 
 
@@ -2302,6 +2254,8 @@ def write_region_word_appendix(id_, appendix_title, word_document, text=None):
 
 
 def get_city(address_):
+    address_ = address_.strip()
+
     while "  " in address_:
         address_ = address_.replace("  ", " ")
 
@@ -2313,6 +2267,8 @@ def get_city(address_):
 
 
 def get_country(address_):
+    address_ = address_.strip()
+
     while "  " in address_:
         address_ = address_.replace("  ", " ")
 
@@ -2326,6 +2282,8 @@ def get_country(address_):
 def get_state_or_province(address_):
     # for simplicity, we call them states
     # could also be provinces and French regions, for example
+
+    address_ = address_.strip()
 
     while "  " in address_:
         address_ = address_.replace("  ", " ")
