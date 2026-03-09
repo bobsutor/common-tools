@@ -38,7 +38,7 @@ entity_substitutions = {
 
 glossary_intro_text = [
     "This glossary contains common terms and definitions from the areas of quantum computing quantum networking, quantum sensing, and quantum communications. It is a work in progress.",
-    "Most of the definitions come from Perplexity and the sources are noted.",
+    "We note the sources of the definitions.",
 ]
 
 
@@ -119,6 +119,9 @@ def html_format_glossary_term(term, yattag_doc, yattag_tag, yattag_text):
 
         if term_data["source"] == "Perplexity":
             with yattag_tag("a", href="https://www.perplexity.ai/", target="_blank"):
+                yattag_text(term_data["source"])
+        elif term_data["source"].startswith("Anthropic"):
+            with yattag_tag("a", href="https://www.anthropic.com/", target="_blank"):
                 yattag_text(term_data["source"])
         else:
             yattag_text(term_data["source"])
@@ -201,6 +204,8 @@ def word_format_glossary_terms(terms, word_document):
             run.italic = True
             if term_data["source"] == "Perplexity":
                 docx_tools.add_hyperlink(p, term_data["source"], "https://www.perplexity.ai/")
+            elif term_data["source"].startswith("Anthropic"):
+                docx_tools.add_hyperlink(p, term_data["source"], "https://www.anthropic.com/")
             else:
                 p.add_run(term_data["source"])
             p.add_run(")")

@@ -973,7 +973,7 @@ COUNTRY_DATA_FOR_NEWS_CATEGORIES = {
         "cities": [],
         "country-flag-emoji": "🇺🇸",
         "country-icon-link": "https://sutorgroupintelligenceandadvisory.com/wp-content/uploads/2025/10/flaticon-earth-americas.png",
-        "other-terms": [],
+        "other-terms": ["U.S.", "U.S.A."],
         "regions": ["North America"],
     },
     # REGION: Oceania
