@@ -3,11 +3,14 @@
 # cspell:ignore autofit oxml powerpnt rels taskkill twips winword rangle
 
 import os
+import re
 import shutil
 import sys
+import textwrap
 import time
 from datetime import date
 from datetime import datetime
+from pathlib import Path
 
 from sty import fg  # type: ignore
 
@@ -15,10 +18,14 @@ time_stack = []  # type: ignore
 
 
 def clear_screen() -> None:
-    if os.name == "nt":
-        os.system("cls")
-    else:
-        os.system("clear")
+    print("\033[2J\033[H", end="")
+
+
+# def clear_screen() -> None:
+#     if os.name == "nt":
+#         os.system("cls")
+#     else:
+#         os.system("clear")
 
 
 def delete_dir_if_present(_dir: str) -> None:
@@ -34,7 +41,7 @@ def delete_dir_if_present(_dir: str) -> None:
                 break
 
 
-def delete_file_if_present(_file: str) -> None:
+def delete_file_if_present(_file: str | Path) -> None:
     if os.path.isfile(_file):
         # weird Windows permission error work around - something to do with timing
         while True:
@@ -159,62 +166,94 @@ def terminating_error(msg: str, indent=0) -> None:
     sys.exit(1)
 
 
-def reflow_text_list(text_list: list[str], line_length=100) -> list[str]:
+# def reflow_text_list(text_list: list[str], line_length=100) -> list[str]:
+#     if isinstance(text_list, str):
+#         text_list = [text_list]
+
+#     if not text_list:
+#         return [""]
+
+#     if not text_list[0]:
+#         return text_list
+
+#     text = " ".join(text_list).strip()
+
+#     if text[-1] not in [".", "!", "?", ">"]:
+#         text += "."
+
+#     text = text.replace("<br>", " ")
+#     text = text.replace("<br/>", " ")
+#     text = text.replace("<br />", " ")
+#     text = text.replace("<p> ", "<p>")
+#     text = text.replace("</p> ", "</p>")
+#     text = text.replace(" <p>", "<p>")
+#     text = text.replace(" </p>", "</p>")
+
+#     text = text.replace("|", "&vert;")
+#     text = text.replace("⟩", "&rangle;")
+#     text = text.replace("π", "&pi;")
+#     text = text.replace("θ", "&theta;")
+#     text = text.replace("φ", "&phi;")
+
+#     while "  " in text:
+#         text = text.replace("  ", " ")
+
+#     new_text_list: list[str] = []
+
+#     working_line_length = line_length
+
+#     while len(text) > working_line_length:
+#         # try to find a blank
+
+#         position = text.rfind(" ", 0, working_line_length)
+#         new_text = ""
+
+#         if position != -1:
+#             new_text = text[:position].strip()
+#             text = text[position:].strip()
+#         else:
+#             # keep making the working line length larger until we can find a blank
+
+#             working_line_length += 10
+#             continue
+
+#         new_text_list.append(new_text)
+#         working_line_length = line_length
+
+#     text = text.strip()
+#     if text:
+#         new_text_list.append(text)
+
+#     return new_text_list
+
+
+SYMBOL_REPLACEMENTS = {
+    "|": "&vert;",
+    "⟩": "&rangle;",
+    "π": "&pi;",
+    "θ": "&theta;",
+    "φ": "&phi;",
+}
+
+
+def reflow_text_list(text_list: str | list[str], line_length: int = 100) -> list[str]:
     if isinstance(text_list, str):
         text_list = [text_list]
 
-    if not text_list:
-        return [""]
-
-    if not text_list[0]:
-        return text_list
+    if not text_list or not text_list[0]:
+        return text_list or [""]
 
     text = " ".join(text_list).strip()
 
-    if text[-1] not in [".", "!", "?", ">"]:
+    if text[-1] not in ".!?>":
         text += "."
 
-    text = text.replace("<br>", " ")
-    text = text.replace("<br/>", " ")
-    text = text.replace("<br />", " ")
-    text = text.replace("<p> ", "<p>")
-    text = text.replace("</p> ", "</p>")
-    text = text.replace(" <p>", "<p>")
-    text = text.replace(" </p>", "</p>")
+    text = re.sub(r"<br\s*/?>", " ", text)
+    text = re.sub(r"\s*(</?p>)\s*", r"\1", text)
 
-    text = text.replace("|", "&vert;")
-    text = text.replace("⟩", "&rangle;")
-    text = text.replace("π", "&pi;")
-    text = text.replace("θ", "&theta;")
-    text = text.replace("φ", "&phi;")
+    for char, entity in SYMBOL_REPLACEMENTS.items():
+        text = text.replace(char, entity)
 
-    while "  " in text:
-        text = text.replace("  ", " ")
+    text = re.sub(r" {2,}", " ", text)
 
-    new_text_list: list[str] = []
-
-    working_line_length = line_length
-
-    while len(text) > working_line_length:
-        # try to find a blank
-
-        position = text.rfind(" ", 0, working_line_length)
-        new_text = ""
-
-        if position != -1:
-            new_text = text[:position].strip()
-            text = text[position:].strip()
-        else:
-            # keep making the working line length larger until we can find a blank
-
-            working_line_length += 10
-            continue
-
-        new_text_list.append(new_text)
-        working_line_length = line_length
-
-    text = text.strip()
-    if text:
-        new_text_list.append(text)
-
-    return new_text_list
+    return textwrap.wrap(text, width=line_length) or [""]
