@@ -72,13 +72,13 @@ COUNTRY_DATA_FOR_NEWS_CATEGORIES = {
         "other-terms": [],
         "regions": ["Africa"],
     },
-    "Chad": {
-        "cities": ["Moundou", "N'Djamena", "Sarh"],
-        "country-flag-emoji": "🇹🇩",
-        "country-icon-link": "https://sutorgroupintelligenceandadvisory.com/wp-content/uploads/2025/10/flaticon-earth-africa.png",
-        "other-terms": [],
-        "regions": ["Africa"],
-    },
+    # "Chad": {  # Chad Rigetti :)
+    #     "cities": ["Moundou", "N'Djamena", "Sarh"],
+    #     "country-flag-emoji": "🇹🇩",
+    #     "country-icon-link": "https://sutorgroupintelligenceandadvisory.com/wp-content/uploads/2025/10/flaticon-earth-africa.png",
+    #     "other-terms": [],
+    #     "regions": ["Africa"],
+    # },
     "Comoros": {
         "cities": ["Fomboni", "Moroni", "Mutsamudu"],
         "country-flag-emoji": "🇰🇲",
@@ -586,7 +586,7 @@ COUNTRY_DATA_FOR_NEWS_CATEGORIES = {
     "Croatia": {
         "cities": [
             "Dubrovnik",
-            "Split",
+            # "Split",  # word shows up in sentences
             "Zagreb",
         ],
         "country-flag-emoji": "🇭🇷",
