@@ -151,7 +151,7 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
                 rel="noopener",
                 title="Get company information from Yahoo! Finance",
             ):
-                text(company_data["financial"]["ticker-symbol"])
+                text(company_data["financial"]["public-ticker-symbol"])
             text(")")
 
         if company_data["contact-info"]["email"]:

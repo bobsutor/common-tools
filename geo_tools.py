@@ -530,7 +530,7 @@ COUNTRY_DATA_FOR_NEWS_CATEGORIES = {
         "regions": ["Asia"],
     },
     "Taiwan": {
-        "cities": ["Taipei"],
+        "cities": ["Taipei", "Tainan", "Tainan City"],
         "country-flag-emoji": "🇹🇼",
         "country-icon-link": "https://sutorgroupintelligenceandadvisory.com/wp-content/uploads/2025/10/flaticon-earth-asia.png",
         "other-terms": ["Taiwanese"],
