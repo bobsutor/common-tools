@@ -1411,7 +1411,7 @@ apme_countries = [
     "Marshall Islands",
     "Micronesia",
     "Mongolia",
-    "Myanmar (Burma)",
+    "Myanmar",
     "Nauru",
     "Nepal",
     "New Zealand",
@@ -1496,19 +1496,19 @@ amer_countries = [
 
 oceania_countries = [
     "Australia",
-    "New Zealand",
-    "Papua New Guinea",
     "Fiji",
-    "Solomon Islands",
-    "Vanuatu",
-    "Samoa",
     "Kiribati",
-    "Tonga",
-    "Micronesia",
     "Marshall Islands",
-    "Palau",
-    "Tuvalu",
+    "Micronesia",
     "Nauru",
+    "New Zealand",
+    "Palau",
+    "Papua New Guinea",
+    "Samoa",
+    "Solomon Islands",
+    "Tonga",
+    "Tuvalu",
+    "Vanuatu",
 ]
 
 nordic_countries = ["Denmark", "Finland", "Iceland", "Norway", "Sweden"]
@@ -2243,7 +2243,10 @@ def write_region_word_appendix(id_, appendix_title, word_document, text=None):
         #     f"{region_data['name']} ({region_abbreviation})", style="RegionAppendix"
         # )
 
-        p = word_document.add_paragraph(f"{region_abbreviation} – {region_data['name']}", style="RegionAppendix")
+        if region_abbreviation == region_data["name"]:
+            p = word_document.add_paragraph(f"{region_data['name']}", style="RegionAppendix")
+        else:
+            p = word_document.add_paragraph(f"{region_abbreviation} – {region_data['name']}", style="RegionAppendix")
         docx_tools.mark_index_entry(region_abbreviation, p)
         p.paragraph_format.space_after = Pt(0)
         p.paragraph_format.keep_with_next = True
