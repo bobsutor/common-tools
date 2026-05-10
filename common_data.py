@@ -27,7 +27,7 @@ TODAY_RANDOM_SEED = int(4 * date.today().strftime("%Y%m%d"))
 
 USE_PLEX = True
 
-REPORT_MODE = True
+REPORT_MODE = False
 SUBSTACK_MODE = False
 
 
@@ -52,10 +52,10 @@ elif SUBSTACK_MODE:
 else:
     BIG_LANDSCAPE = True
     CHART_PORTRAIT_MODE = False
-    SHOW_CHART_LOGOS = False
+    SHOW_CHART_LOGOS = True
     SHOW_DATE = True
     SHOW_FIGURE_NUMBERS = False
-    SHOW_SUTOR_GROUP_COPYRIGHT = False
+    SHOW_SUTOR_GROUP_COPYRIGHT = True
     SHOW_TITLE = False
 
 
