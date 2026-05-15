@@ -4,6 +4,7 @@ import calendar
 import json
 from datetime import date
 from datetime import datetime
+from pathlib import Path
 
 import yattag
 
@@ -20,10 +21,13 @@ MAX_NEWS_ITEMS = 30
 
 SHOW_SENIOR_LEADERSHIP = True
 
-with open(f"{DATA_FOLDER}{NEWS_ARCHIVE_FILE}", "rt", encoding="utf8") as file:
+DATA_PATH = Path(DATA_FOLDER)
+ORGANIZATION_DATA_PATH = Path(ORGANIZATION_DATA_FOLDER)
+
+with (DATA_PATH / NEWS_ARCHIVE_FILE).open("rt", encoding="utf8") as file:
     press_releases = json.load(file)
 
-with open(f"{DATA_FOLDER}{INVESTORS_FILE}", "rt", encoding="utf8") as file:
+with (DATA_PATH / INVESTORS_FILE).open("rt", encoding="utf8") as file:
     INVESTORS = json.load(file)
 
 
@@ -105,15 +109,25 @@ def is_within_last_months(reference_date_str: str, target_date_str: str, months_
 
 
 def build_company_profile(company_name: str, heading_level: str = "h3", indent_sections=True) -> str:
-    # os.system("cls")
+    # Find the JSON file in ORGANIZATION_DATA_PATH or any subfolder
+    matches = list(ORGANIZATION_DATA_PATH.rglob(f"{company_name}.json"))
 
-    input_json = f"{ORGANIZATION_DATA_FOLDER}{company_name}.json"
+    if not matches:
+        os_tools.terminating_error(
+            f"Could not find the company data file '{company_name}.json' " f"in '{ORGANIZATION_DATA_PATH}' or its subfolders."
+        )
 
-    company_data = dict()
+    if len(matches) > 1:
+        # Warn if there are duplicates; pick the first deterministically
+        print(f"Warning: found {len(matches)} matches for '{company_name}.json'; using {matches[0]}")
+
+    input_json = matches[0]
+
+    company_data: dict = {}
     name = ""
 
     try:
-        with open(input_json, "rt", encoding="utf8") as json_file:
+        with input_json.open("rt", encoding="utf8") as json_file:
             for name_, data_ in json.load(json_file).items():
                 name = name_
                 company_data = data_
@@ -142,11 +156,11 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
         ):
             text(company_name)
 
-        if company_data["financial"]["public"]:
+        if company_data["financial"]["public-ticker-symbol"]:
             text(" (")
             with tag(
                 "a",
-                href=f"https://finance.yahoo.com/quote/{company_data['financial']['ticker-symbol']}/",
+                href=f"https://finance.yahoo.com/quote/{company_data['financial']['public-ticker-symbol']}/",
                 target="_blank",
                 rel="noopener",
                 title="Get company information from Yahoo! Finance",
@@ -225,59 +239,21 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
             text("Senior Leadership")
 
         with tag("ul"):
-            for role, role_data in company_data["leadership"].items():
-                if not isinstance(role_data, list):
-                    role_data = [role_data]
-
-                for person in role_data:
-                    with tag("li"):
-                        if person["links"]["primary"] is not None and person["links"]["primary"]:
-                            with tag("a", href=person["links"]["primary"], target="_blank", rel="noopener"):
-                                text(person["name"])
-                        else:
+            for person in company_data.get("leadership", []):
+                with tag("li"):
+                    if person.get("link"):
+                        with tag("a", href=person["link"], target="_blank", rel="noopener"):
                             text(person["name"])
+                    else:
+                        text(person["name"])
 
-                        text(": ")
-                        text(role)
-
-        # with tag("table", style="width: 100%;"):
-        #     for role, role_data in company_data["leadership"].items():
-        #         with tag("tr"):
-        #             if not isinstance(role_data, list):
-        #                 role_data = [role_data]
-
-        #             for person in role_data:
-        #                 with tag("td", style="width: 15%;"):
-        #                     if person["links"]["image"] is not None and person["links"]["image"]:
-        #                         if person["links"]["primary"] is not None and person["links"]["primary"]:
-        #                             with tag("a", href=person["links"]["primary"], target="_blank", rel="noopener"):
-        #                                 doc.stag(
-        #                                     "img",
-        #                                     src=person["links"]["image"].strip(),
-        #                                     style="width: 5em; border-radius: 50%;",
-        #                                 )
-        #                         else:
-        #                             doc.stag(
-        #                                 "img",
-        #                                 src=person["links"]["image"].strip(),
-        #                                 style="width: 5em; border-radius: 50%;",
-        #                             )
-        #                     else:
-        #                         doc.asis("&nbsp;")
-        #                 with tag("td", style="width: 42.5%;"):
-        #                     if person["links"]["primary"] is not None and person["links"]["primary"]:
-        #                         with tag("a", href=person["links"]["primary"], target="_blank", rel="noopener"):
-        #                             text(person["name"])
-        #                     else:
-        #                         text(person["name"])
-
-        #                 with tag("td", style="width: 42.5%;"):
-        #                     text(role)
+                    text(": ")
+                    text(person["title"])
 
     # Show recent press releases and blog posts if there are any
 
     if (
-        not company_data["financial"]["public"]
+        not company_data["financial"]["public-ticker-symbol"]
         and company_data["financial"]["investors"]
         and isinstance(company_data["financial"]["investors"], list)
     ):
@@ -299,8 +275,8 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
                     else:
                         text(investor)
 
-    company_news_items = []  # type: ignore
-    other_earnings_briefs = []  # type: ignore
+    company_news_items: list = []
+    other_earnings_briefs: list = []
 
     for press_release_key, press_release_data in press_releases.items():
         if "include-in-daily-links" in press_release_data and not press_release_data["include-in-daily-links"]:
@@ -387,7 +363,11 @@ def build_company_profile(company_name: str, heading_level: str = "h3", indent_s
 
 
 if __name__ == "__main__":
-    COMPANY = "SEEQC"
+    COMPANY = "Infleqtion"
     # COMPANY = "D-Wave Quantum"
-    with open(f"../sg-reports/output/{COMPANY}-Company-Profile.html", "wt", encoding="utf-8") as output_html_file:
+
+    output_file = Path("../sg-reports/output") / f"{COMPANY}-Company-Profile.html"
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+
+    with output_file.open("wt", encoding="utf-8") as output_html_file:
         print(build_company_profile(COMPANY, "h3", True), file=output_html_file)
